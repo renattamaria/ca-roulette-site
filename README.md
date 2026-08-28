@@ -1,40 +1,41 @@
-# Combat Achievement Roulette (website)
+# Combat Achievement Roulette
 
-Single self-contained `index.html`. Loads the JSON written by the **CA Roulette Export**
-RuneLite plugin, then spins a random Combat Achievement you haven't done yet.
+A single self-contained `index.html`. You import the JSON written by the
+**CA Roulette Export** RuneLite plugin, and it spins a random Combat Achievement
+you haven't done yet.
 
-- All 655 CA tasks are baked in (id, boss, name, description, type, tier, community completion %),
-  sourced from the [OSRS Wiki](https://oldschool.runescape.wiki/w/Combat_Achievements/All_tasks)
+**Live:** <https://ca-roulette.vercel.app>
+
+- All 655 CA tasks are baked in (id, boss, name, description, type, tier,
+  community completion %), sourced from the
+  [OSRS Wiki](https://oldschool.runescape.wiki/w/Combat_Achievements/All_tasks)
   and joined to your export by the stable task id.
-- Your progress is stored in the browser (`localStorage`). Nothing is uploaded.
-- Filters: tier, task type, boss/activity, and "hide tasks I can't start yet" (checks your
-  quests and stats from the export against a curated boss-requirement table).
+- Your progress is stored in your browser (`localStorage`). Nothing is uploaded.
+- Filters: tier, task type, boss/activity, and "hide tasks I can't start yet"
+  (checks your quests and stats from the export against a curated
+  boss-requirement table).
 
-## Where it's hosted
+## Hosting
 
-Published as a Claude Artifact:
-<https://claude.ai/code/artifact/d4d301f7-102d-4c36-a7da-6bceb8129535>
+Deployed on Vercel from this repo — every `git push` to `master` redeploys
+automatically. It's pure static HTML, no build step. Works the same on GitHub
+Pages, Netlify, Cloudflare Pages, or opened locally.
 
-It starts private. Use the **Share** menu on that page to give friends a link.
+## Editing
 
-## Self-hosting (optional, e.g. Vercel)
+Everything is in `index.html`.
 
-`index.html` is fully static and standalone — no build step, no server code.
+- **Task data:** the first `<script>` block, `window.CA_DATA`. Generated from the
+  wiki's "All tasks" table (`data/ca_wiki.json` is the intermediate dump). After a
+  game update, re-scrape that table and rebuild the
+  `[id, monsterIdx, name, desc, typeIdx, tierIdx, comp]` rows.
+- **Boss requirements** for the "can I attempt this" filter: the `REQS` object in
+  the second `<script>` — `{ "Boss Name": { quests: [...], skills: { Slayer: 95 } } }`.
+  Deliberately conservative (only well-known hard gates); add entries as needed.
 
-**Vercel:**
-1. Put `index.html` in a folder on its own (this folder works).
-2. `npx vercel` in that folder, or drag the folder onto the Vercel dashboard.
-3. It serves `index.html` at the root. Done.
+## The plugin
 
-**Anything else:** GitHub Pages, Netlify drop, Cloudflare Pages, or just open the file
-locally — all work, because it's one HTML file with everything inlined.
-
-## Editing the task data
-
-The dataset lives in the first `<script>` block as `window.CA_DATA`. It was generated from
-the wiki's "All tasks" table. To refresh it after a game update, re-scrape that table and
-rebuild the same `[id, monsterIdx, name, desc, typeIdx, tierIdx, comp]` rows.
-
-The boss-requirement table for the "can I attempt this" filter is the `REQS` object in the
-second `<script>` — plain `{ "Boss Name": { quests: [...], skills: { Slayer: 95 } } }`.
-It's deliberately conservative (only well-known hard gates); add entries as needed.
+The companion RuneLite plugin lives at
+<https://github.com/renattamaria/ca-roulette-export>. It reads Combat Achievement
+completion, skills, quests and items from the game client and writes the JSON this
+site imports. Install it from the RuneLite Plugin Hub ("CA Roulette Export").
