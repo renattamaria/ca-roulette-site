@@ -435,14 +435,15 @@
         <button class="tiny ghost" id="resetMarksBtn" hidden>Undo local marks</button>
         <button class="tiny ghost" id="switchBtn" hidden>Switch</button>
         <button class="tiny ghost" id="reimportBtn">Re-import</button>
+        <button class="tiny ghost" id="clearBtn">Clear</button>
       </div>
     </div>
     <div class="prof-stats" id="pStats"></div>
     <div class="tierbars" id="tierbars"></div>
     <div class="reset-confirm" id="resetConfirm" hidden>
-      <span id="resetConfirmText">Clear every task you ticked off on this site?</span>
-      <button class="tiny" id="resetYes">Yes, clear them</button>
-      <button class="tiny ghost" id="resetNo">Keep them</button>
+      <span id="resetConfirmText"></span>
+      <button class="tiny" id="resetYes">Yes</button>
+      <button class="tiny ghost" id="resetNo">Cancel</button>
     </div>
   </section>
 
@@ -665,7 +666,7 @@
     current = null;
     lastMarked = null;
     if (undoRow) undoRow.hidden = true;
-    if (resetConfirm) resetConfirm.hidden = true;
+    closeConfirm();
     session.skipped = {};
     render();
   }
@@ -709,7 +710,7 @@
     current = null;
     lastMarked = null;
     undoRow.hidden = true;
-    resetConfirm.hidden = true;
+    closeConfirm();
     session.skipped = {};
     render();
   });
@@ -828,12 +829,25 @@
   var undoBtn = document.getElementById("undoBtn");
   var undoRow = document.getElementById("undoRow");
   var resetMarksBtn = document.getElementById("resetMarksBtn");
+  var clearBtn = document.getElementById("clearBtn");
   var resetConfirm = document.getElementById("resetConfirm");
   var resetConfirmText = document.getElementById("resetConfirmText");
   var poolCount = document.getElementById("poolCount");
   var poolBreak = document.getElementById("poolBreak");
   var blockNote = document.getElementById("blockNote");
   var lastMarked = null; // { id, name } of the most recent "I did it" click
+  var pendingConfirm = null; // action the inline Yes/Cancel strip will run
+
+  /** Show the inline confirm strip. Browsers sandbox window.confirm, so we roll our own. */
+  function askConfirm(question, onYes) {
+    resetConfirmText.textContent = question;
+    pendingConfirm = onYes;
+    resetConfirm.hidden = false;
+  }
+  function closeConfirm() {
+    pendingConfirm = null;
+    resetConfirm.hidden = true;
+  }
 
   function tierColor(i) {
     return getComputedStyle(document.documentElement).getPropertyValue("--tier-" + TIER_KEY[i]).trim();
@@ -859,7 +873,6 @@
       var nMarks = (p.markedDone || []).length;
       resetMarksBtn.hidden = nMarks === 0;
       resetMarksBtn.textContent = "Undo " + nMarks + " local mark" + (nMarks === 1 ? "" : "s");
-      if (nMarks === 0) resetConfirm.hidden = true;
 
       var hasReq = (p.questsFinished && p.questsFinished.length) || (p.skills && Object.keys(p.skills).length);
       document.getElementById("blockRow").style.display = hasReq ? "" : "none";
@@ -872,6 +885,11 @@
       elImport.style.display = "";
       elProfile.classList.remove("on");
       elStage.classList.add("locked");
+      elCard.className = "card empty";
+      elCard.style.removeProperty("--card-tier");
+      elCard.innerHTML = '<div class="taskname" id="cardBody">Load a profile, then spin.</div>';
+      doneBtn.hidden = true;
+      skipBtn.hidden = true;
     }
     refresh();
   }
@@ -1022,22 +1040,47 @@
     var p = activeProfile();
     if (!p || !p.markedDone.length) return;
     var n = p.markedDone.length;
-    resetConfirmText.textContent = "Un-tick all " + n + " task" + (n === 1 ? "" : "s") +
-      " you marked done on this site? (Your imported progress is not affected.)";
-    resetConfirm.hidden = false;
+    askConfirm("Un-tick all " + n + " task" + (n === 1 ? "" : "s") +
+      " you marked done on this site? (Your imported progress is not affected.)",
+      function () {
+        var prof = activeProfile();
+        if (!prof) return;
+        prof.markedDone = [];
+        lastMarked = null;
+        undoRow.hidden = true;
+        save();
+        render();
+      });
   });
-  document.getElementById("resetNo").addEventListener("click", function () {
-    resetConfirm.hidden = true;
-  });
-  document.getElementById("resetYes").addEventListener("click", function () {
+
+  clearBtn.addEventListener("click", function () {
     var p = activeProfile();
-    resetConfirm.hidden = true;
     if (!p) return;
-    p.markedDone = [];
-    lastMarked = null;
-    undoRow.hidden = true;
-    save();
-    render();
+    var others = Object.keys(store.profiles).filter(function (n) { return n !== store.activeProfile; });
+    var where = others.length
+      ? " You'll be switched to " + (store.profiles[others[0]].displayName || others[0]) + "."
+      : " You'll go back to the upload screen.";
+    askConfirm("Remove " + p.displayName + " and everything ticked off for them?" + where
+      + " The exported file on your PC is untouched, so you can load it again any time.",
+      function () {
+        delete store.profiles[store.activeProfile];
+        var left = Object.keys(store.profiles);
+        store.activeProfile = left.length ? left[0] : null;
+        current = null;
+        lastMarked = null;
+        session.skipped = {};
+        undoRow.hidden = true;
+        save();
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+  });
+
+  document.getElementById("resetNo").addEventListener("click", closeConfirm);
+  document.getElementById("resetYes").addEventListener("click", function () {
+    var action = pendingConfirm;
+    closeConfirm();
+    if (action) action();
   });
   skipBtn.addEventListener("click", function () {
     if (!current) return;
