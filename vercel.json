@@ -1,3 +1,9 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/tome/:match*",
+      "destination": "https://www.rollmyca.com/_vercel/insights/:match*"
+    }
+  ]
 }
