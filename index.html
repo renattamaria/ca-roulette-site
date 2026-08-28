@@ -417,7 +417,7 @@
 
   <section class="panel" id="profile" aria-live="polite">
     <div class="prof-top">
-      <span class="prof-name" id="pName">&mdash;</span>
+      <span class="prof-name" id="pName"></span>
       <div class="prof-actions">
         <button class="tiny ghost" id="resetMarksBtn" hidden>Undo local marks</button>
         <button class="tiny ghost" id="switchBtn" hidden>Switch</button>
@@ -445,9 +445,9 @@
     <details class="help">
       <summary>How do I get that file?</summary>
       <ol>
-        <li>In RuneLite, open the <strong>Plugin Hub</strong> (wrench icon &rarr; <em>Plugin Hub</em> button at the bottom), search <strong>CA Roulette Export</strong>, and install it.</li>
-        <li>Log in. Wait a few seconds, open your bank once, then type <code>::caexport</code> in the chat box &mdash; or click <em>Export my data</em> in the plugin&rsquo;s side panel.</li>
-        <li>It writes <code>%USERPROFILE%\.runelite\ca-roulette\&lt;name&gt;.json</code> &mdash; drop that file above.</li>
+        <li>In RuneLite, open the <strong>Plugin Hub</strong> (the wrench icon, then the <em>Plugin Hub</em> button at the bottom), search <strong>CA Roulette Export</strong>, and install it.</li>
+        <li>Log in. Wait a few seconds, open your bank once, then type <code>::caexport</code> in the chat box, or click <em>Export my data</em> in the plugin&rsquo;s side panel.</li>
+        <li>It writes <code>%USERPROFILE%\.runelite\ca-roulette\&lt;name&gt;.json</code>. Drop that file above.</li>
       </ol>
       <p style="font-size:13px;margin-top:10px">Nothing you load here leaves your browser. It&rsquo;s saved locally so you don&rsquo;t have to re-import every visit.</p>
     </details>
@@ -489,7 +489,7 @@
       <span class="label" id="blockNote" style="letter-spacing:.04em;text-transform:none;font-style:italic"></span>
     </div>
     <div class="poolline">
-      <span>In the pool right now: <b id="poolCount">&mdash;</b> tasks</span>
+      <span>In the pool right now: <b id="poolCount">0</b> tasks</span>
       <span id="poolBreak"></span>
     </div>
   </section>
@@ -558,10 +558,10 @@
     "Wyrm": { skills: { Slayer: 62 } },
     "Bloodveld": { skills: { Slayer: 50 } },
     "Aberrant Spectre": { skills: { Slayer: 60 } },
-    "Hespori": { skills: { Farming: 65 }, note: "Farming Guild - needs 60% Hosidius favour" },
+    "Hespori": { skills: { Farming: 65 }, note: "Farming Guild, needs 60% Hosidius favour" },
     "Wintertodt": { skills: { Firemaking: 50 } },
     "Tempoross": { skills: { Fishing: 35 } },
-    "TzKal-Zuk": { note: "the Inferno - requires completing the Fight Caves" },
+    "TzKal-Zuk": { note: "the Inferno; requires beating the Fight Caves first" },
     "Phosani's Nightmare": { note: "requires a solo Nightmare kill first" }
   };
 
@@ -641,7 +641,7 @@
 
   function readFile(f) {
     if (!f) return;
-    if (f.size > 8 * 1024 * 1024) { fail("That file is unexpectedly large (>8 MB) - aborting."); return; }
+    if (f.size > 8 * 1024 * 1024) { fail("That file is unexpectedly large (over 8 MB), not loading it."); return; }
     var fr = new FileReader();
     fr.onerror = function () { fail("Couldn't read that file."); };
     fr.onload = function () {
@@ -878,7 +878,7 @@
     if (p && list.length === 0 && !spinTimer) {
       showEmpty(anyFilterActive()
         ? "No tasks match these filters. Loosen them, or you've done everything that does."
-        : "Every task is done. Absolute menace. \uD83C\uDFC6");
+        : "Every task is done. Absolute menace.");
     } else if (p && list.length > 0 && !current && !spinTimer && elCard.classList.contains("empty")) {
       elCard.innerHTML = '<div class="taskname" id="cardBody">Press Spin for your next task.</div>';
     }

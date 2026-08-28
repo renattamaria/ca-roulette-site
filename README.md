@@ -17,7 +17,7 @@ you haven't done yet.
 
 ## Hosting
 
-Deployed on Vercel from this repo — every `git push` to `master` redeploys
+Deployed on Vercel from this repo. Every `git push` to `master` redeploys
 automatically. It's pure static HTML, no build step. Works the same on GitHub
 Pages, Netlify, Cloudflare Pages, or opened locally.
 
@@ -30,8 +30,8 @@ Everything is in `index.html`.
   game update, re-scrape that table and rebuild the
   `[id, monsterIdx, name, desc, typeIdx, tierIdx, comp]` rows.
 - **Boss requirements** for the "can I attempt this" filter: the `REQS` object in
-  the second `<script>` — `{ "Boss Name": { quests: [...], skills: { Slayer: 95 } } }`.
-  Deliberately conservative (only well-known hard gates); add entries as needed.
+  the second `<script>`, shaped `{ "Boss Name": { quests: [...], skills: { Slayer: 95 } } }`.
+  It only covers well-known hard gates; add entries as needed.
 
 ## The plugin
 
