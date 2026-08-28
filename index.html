@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Combat Achievement Roulette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  /* ===== OSRS-interface skin =============================================
+     light theme = aged vellum; dark theme = quarried stone. Both painted
+     explicitly so the page holds on any host ground. ==================== */
+  :root {
+    --bg:          #e7dab8;
+    --panel:       #f1e7cc;
+    --panel-well:  #ddcca2;
+    --edge:        #5a4325;
+    --bevel:       rgba(255,255,255,.55);
+    --ink:         #2e2311;
+    --ink-soft:    #574828;
+    --muted:       #8a744a;
+    --rule:        #c7b384;
+    --eyebrow:     #7a5410;
+    --gold:        #9a6a12;
+    --gold-lite:   #c79a3e;
+    --gold-deep:   #6d4708;
+    --btn-face:    #e7d8b1;
+    --btn-face-2:  #cdb783;
+    --primary-1:   #f3d78a;
+    --primary-2:   #cb992f;
+    --primary-3:   #a9781f;
+    --primary-4:   #e8bf68;
+    --primary-ink: #2c1d04;
+    --parch:       #efe4c6;
+    --parch-2:     #e0d0a4;
+    --parch-ink:   #2c2112;
+    --parch-edge:  #7a5c2e;
+    --danger:      #a5432a;
+    --good:        #3f7d4f;
+
+    --tier-easy:        #6d7482;
+    --tier-medium:      #3d8b52;
+    --tier-hard:        #2f74b0;
+    --tier-elite:       #7d4fc0;
+    --tier-master:      #b8433c;
+    --tier-grandmaster: #a9781f;
+
+    --maxw: 900px;
+    --font-mark: "Cinzel Decorative", "Cinzel", "Times New Roman", serif;
+    --font-display: "Cinzel", "Times New Roman", serif;
+    --font-body: "Spectral", Georgia, "Times New Roman", serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #130d06;
+      --panel:       #211a0d;
+      --panel-well:  #17110a;
+      --edge:        #000000;
+      --bevel:       rgba(255,226,164,.12);
+      --ink:         #ece0c4;
+      --ink-soft:    #c7b48b;
+      --muted:       #8f7c56;
+      --rule:        #3a2f1a;
+      --eyebrow:     #cc9c48;
+      --gold:        #e8b23e;
+      --gold-lite:   #ffe6a6;
+      --gold-deep:   #9a6a1e;
+      --btn-face:    #2b2214;
+      --btn-face-2:  #1e1810;
+      --primary-1:   #f4dc94;
+      --primary-2:   #d3a341;
+      --primary-3:   #a9781f;
+      --primary-4:   #e7bd63;
+      --primary-ink: #241802;
+      --parch:       #e8d9b6;
+      --parch-2:     #d3bf90;
+      --parch-ink:   #2c2112;
+      --parch-edge:  #7c5d2c;
+      --danger:      #b8492c;
+      --good:        #5f9d70;
+
+      --tier-easy:        #a6adba;
+      --tier-medium:      #5fb56f;
+      --tier-hard:        #5199d6;
+      --tier-elite:       #a978e6;
+      --tier-master:      #dd6257;
+      --tier-grandmaster: #e6b64c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#130d06; --panel:#211a0d; --panel-well:#17110a; --edge:#000000;
+    --bevel:rgba(255,226,164,.12); --ink:#ece0c4; --ink-soft:#c7b48b; --muted:#8f7c56;
+    --rule:#3a2f1a; --eyebrow:#cc9c48; --gold:#e8b23e; --gold-lite:#ffe6a6; --gold-deep:#9a6a1e;
+    --btn-face:#2b2214; --btn-face-2:#1e1810;
+    --primary-1:#f4dc94; --primary-2:#d3a341; --primary-3:#a9781f; --primary-4:#e7bd63; --primary-ink:#241802;
+    --parch:#e8d9b6; --parch-2:#d3bf90; --parch-ink:#2c2112; --parch-edge:#7c5d2c;
+    --danger:#b8492c; --good:#5f9d70;
+    --tier-easy:#a6adba; --tier-medium:#5fb56f; --tier-hard:#5199d6;
+    --tier-elite:#a978e6; --tier-master:#dd6257; --tier-grandmaster:#e6b64c;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    background:
+      radial-gradient(125% 80% at 50% -12%, rgba(255,220,150,.07), transparent 60%),
+      radial-gradient(140% 120% at 50% 120%, rgba(0,0,0,.42), transparent 55%),
+      var(--bg);
+    background-attachment: fixed;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: .3;
+    mix-blend-mode: soft-light;
+  }
+  .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 34px 20px 72px; }
+
+  a { color: var(--gold); text-underline-offset: 2px; }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+  }
+
+  .gild { color: var(--gold); }
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .gild {
+      background: linear-gradient(180deg, var(--gold-lite) 0%, var(--gold) 44%, var(--gold-deep) 58%, var(--gold-lite) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent; -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .flourish { display: flex; align-items: center; justify-content: center; gap: 13px; margin: 14px auto 0; max-width: 300px; }
+  .flourish::before, .flourish::after { content: ""; height: 1px; flex: 1; background: linear-gradient(90deg, transparent, var(--gold-deep)); }
+  .flourish::after { background: linear-gradient(90deg, var(--gold-deep), transparent); }
+  .flourish i { width: 7px; height: 7px; transform: rotate(45deg); background: var(--gold); box-shadow: 0 0 0 1px var(--gold-deep); }
+
+  /* ---------- header ---------- */
+  header { text-align: center; margin-bottom: 26px; }
+  .mark {
+    font-family: var(--font-mark);
+    font-weight: 700;
+    font-size: clamp(25px, 5.6vw, 43px);
+    letter-spacing: .1em;
+    line-height: 1.14;
+    margin: 0;
+    text-wrap: balance;
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,.35));
+  }
+  .mark .rl { display: block; font-size: .82em; letter-spacing: .3em; margin-top: 4px; }
+  .tagline { color: var(--muted); font-style: italic; margin: 12px 0 0; font-size: 15px; }
+
+  /* ---------- carved-stone panels ---------- */
+  .panel {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(255,240,200,.05), transparent 140px),
+      var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 3px;
+    box-shadow:
+      inset 0 0 0 1px var(--bevel),
+      inset 0 2px 4px rgba(0,0,0,.16),
+      0 2px 0 rgba(0,0,0,.28),
+      0 16px 34px rgba(0,0,0,.32);
+  }
+
+  /* ---------- profile strip ---------- */
+  #profile { display: none; margin-bottom: 22px; padding: 16px 18px; }
+  #profile.on { display: block; }
+  .prof-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 18px; justify-content: space-between; }
+  .prof-name { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: .04em; color: var(--ink); }
+  .prof-stats { display: flex; flex-wrap: wrap; gap: 6px 0; font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft); }
+  .prof-stats span { white-space: nowrap; }
+  .prof-stats span + span { margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--rule); }
+  .prof-stats b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tierbars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 9px; margin-top: 15px; }
+  .tb .label { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: .08em; color: var(--muted); }
+  .tb .track {
+    height: 8px; margin-top: 5px; border-radius: 2px;
+    background: var(--panel-well); border: 1px solid var(--edge);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.45);
+    overflow: hidden;
+  }
+  .tb .fill { height: 100%; box-shadow: inset 0 5px 6px -4px rgba(255,255,255,.5), inset 0 -6px 6px -4px rgba(0,0,0,.35); }
+  .prof-actions { display: flex; gap: 8px; }
+  .reset-confirm {
+    margin-top: 15px; padding: 11px 13px;
+    border: 1px solid var(--danger); border-radius: 3px;
+    background: linear-gradient(180deg, rgba(165,67,42,.16), rgba(165,67,42,.08));
+    box-shadow: inset 0 0 0 1px var(--bevel);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--ink);
+  }
+  .reset-confirm[hidden] { display: none; }
+  .reset-confirm button#resetYes { border-color: var(--danger); color: var(--danger); }
+
+  /* ---------- import ---------- */
+  #import { padding: 26px 22px; margin-bottom: 22px; }
+  #import h2 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0 0 8px; letter-spacing: .03em; }
+  #import p { margin: 6px 0; color: var(--ink-soft); font-size: 15px; }
+  .drop {
+    margin-top: 16px;
+    border: 1px dashed var(--gold-deep);
+    border-radius: 3px;
+    background: var(--panel-well);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,.3);
+    padding: 26px 18px;
+    text-align: center;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .drop.hot { border-color: var(--gold); box-shadow: inset 0 2px 10px rgba(0,0,0,.3), 0 0 14px rgba(232,178,62,.35); }
+  .drop .label { display: block; margin-bottom: 10px; color: var(--muted); }
+  details.help { margin-top: 16px; }
+  details.help summary { cursor: pointer; font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  details.help[open] summary { color: var(--eyebrow); }
+  details.help ol { margin: 10px 0 0; padding-left: 22px; font-size: 14px; color: var(--ink-soft); }
+  details.help code, #import code {
+    font-family: var(--font-mono); font-size: .86em;
+    background: var(--panel-well); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--edge);
+  }
+  .err { color: var(--danger); font-family: var(--font-mono); font-size: 13px; margin-top: 10px; min-height: 1.2em; }
+
+  /* ---------- roulette ---------- */
+  #stage { padding: 12px 22px 26px; margin-bottom: 22px; text-align: center; }
+  #stage > .label { display: inline-block; }
+  #stage.locked { opacity: .5; pointer-events: none; }
+
+  .card {
+    position: relative;
+    margin: 18px auto 0;
+    max-width: 600px;
+    min-height: 240px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px;
+    padding: 30px 30px 26px;
+    color: var(--parch-ink);
+    background:
+      radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.35), transparent 45%),
+      linear-gradient(180deg, var(--parch) 0%, var(--parch-2) 100%);
+    border: 1px solid var(--parch-edge);
+    border-radius: 2px;
+    box-shadow:
+      inset 0 0 48px rgba(120,86,38,.30),
+      inset 0 0 0 1px rgba(255,252,240,.4),
+      0 3px 0 rgba(0,0,0,.35),
+      0 18px 40px rgba(0,0,0,.4);
+    overflow: hidden;
+  }
+  .card:not(.spinning):not(.empty) { animation: unfurl .32s ease-out; }
+  @keyframes unfurl { from { transform: scale(.986); opacity: .35; } to { transform: none; opacity: 1; } }
+
+  .card .medallion {
+    width: 58px; height: 58px; border-radius: 50%;
+    display: grid; place-items: center; line-height: 1;
+    font-family: var(--font-mono); font-weight: 700; font-size: 21px; color: #fff;
+    background:
+      radial-gradient(circle at 34% 28%, rgba(255,255,255,.6), rgba(255,255,255,0) 55%),
+      var(--card-tier, #8a7a55);
+    border: 3px solid var(--parch-edge);
+    box-shadow:
+      0 0 0 2px var(--card-tier, #8a7a55),
+      inset 0 -7px 12px rgba(0,0,0,.4),
+      inset 0 3px 6px rgba(255,255,255,.35),
+      0 3px 8px rgba(0,0,0,.4);
+    text-shadow: 0 1px 2px rgba(0,0,0,.55);
+  }
+  .card .medallion small { display: block; font-size: 8px; font-weight: 600; letter-spacing: .12em; opacity: .82; margin-top: 1px; }
+  .card .tierlabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; font-weight: 700; color: var(--parch-edge); }
+  .card .monster { font-family: var(--font-mono); font-size: 12px; letter-spacing: .13em; text-transform: uppercase; color: #7c6034; }
+  .card .taskname {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(21px, 4.4vw, 30px);
+    line-height: 1.16;
+    letter-spacing: .008em;
+    margin: 1px 0;
+    text-wrap: balance;
+    color: var(--parch-ink);
+  }
+  .card .desc { color: #4c3b22; font-size: 15.5px; max-width: 46ch; margin: 0 auto; }
+  .card .meta { font-family: var(--font-mono); font-size: 12px; color: #6c5836; margin-top: 6px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .card .meta a { color: #6c5836; }
+  .card .blocked {
+    margin: 8px auto 0; max-width: 46ch;
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.5;
+    color: #9e3f27;
+    border-top: 1px solid rgba(122,92,46,.45); padding-top: 8px;
+  }
+  .card.spinning .taskname { color: #7c6034; }
+  .card.spinning .medallion { filter: saturate(.4) brightness(.9); }
+  .card.spinning .monster, .card.spinning .desc, .card.spinning .meta, .card.spinning .tierlabel { opacity: .3; }
+  .card.empty { color: #6c5836; font-family: var(--font-mono); font-size: 14px; }
+  .card.empty .taskname { font-family: var(--font-mono); font-size: 15px; color: #6c5836; font-weight: 400; }
+
+  .spin-row { margin-top: 22px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  button {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--btn-face), var(--btn-face-2));
+    border: 1px solid var(--edge);
+    border-radius: 3px;
+    padding: 10px 16px;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 var(--bevel), inset 0 -2px 4px rgba(0,0,0,.3), 0 2px 0 rgba(0,0,0,.24);
+    transition: filter .12s, transform .04s, box-shadow .12s;
+  }
+  button:hover { filter: brightness(1.09); }
+  button:active { transform: translateY(1px); box-shadow: inset 0 2px 5px rgba(0,0,0,.42); }
+  button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button:disabled { opacity: .4; cursor: not-allowed; filter: none; }
+  button.primary {
+    background: linear-gradient(180deg, var(--primary-1), var(--primary-2) 49%, var(--primary-3) 51%, var(--primary-4));
+    border-color: #3d2a06;
+    color: var(--primary-ink);
+    font-weight: 700;
+    padding: 13px 32px;
+    font-size: 13px;
+    letter-spacing: .2em;
+    text-shadow: 0 1px 0 rgba(255,240,200,.45);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -3px 7px rgba(120,80,10,.42), 0 2px 0 rgba(0,0,0,.32);
+  }
+  button.primary:hover { filter: brightness(1.05); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 0 16px rgba(232,178,62,.42), 0 2px 0 rgba(0,0,0,.32); }
+  button.ghost { background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.14)); box-shadow: inset 0 0 0 1px var(--bevel); }
+  button:disabled { opacity: .4; }
+  button.tiny { padding: 6px 10px; font-size: 10px; letter-spacing: .09em; }
+
+  /* ---------- filters ---------- */
+  #filters { padding: 18px 20px 20px; }
+  #filters .row { margin-top: 16px; }
+  #filters .row:first-child { margin-top: 0; }
+  #filters .row > .label { display: block; margin-bottom: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    padding: 6px 11px;
+    border-radius: 3px;
+    border: 1px solid var(--edge);
+    background: linear-gradient(180deg, var(--btn-face), var(--btn-face-2));
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    box-shadow: inset 0 1px 0 var(--bevel);
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: 2px; transform: rotate(45deg); background: currentColor; opacity: .5; }
+  .chip[aria-pressed="true"] { color: var(--ink); box-shadow: inset 0 1px 0 var(--bevel), 0 0 0 1px currentColor, 0 0 11px -3px currentColor; }
+  .chip[aria-pressed="true"] .dot { opacity: 1; }
+  .chip.t-easy[aria-pressed="true"] { color: var(--tier-easy); }
+  .chip.t-medium[aria-pressed="true"] { color: var(--tier-medium); }
+  .chip.t-hard[aria-pressed="true"] { color: var(--tier-hard); }
+  .chip.t-elite[aria-pressed="true"] { color: var(--tier-elite); }
+  .chip.t-master[aria-pressed="true"] { color: var(--tier-master); }
+  .chip.t-grandmaster[aria-pressed="true"] { color: var(--tier-grandmaster); }
+
+  .fila { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+  input[type="text"], select {
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--ink); background: var(--panel-well);
+    border: 1px solid var(--edge); border-radius: 3px;
+    padding: 8px 11px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.32);
+  }
+  input[type="text"] { min-width: 210px; flex: 1; }
+  input[type="text"]::placeholder { color: var(--muted); }
+  input[type="text"]:focus, select:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; color: var(--ink-soft); }
+  .toggle input { accent-color: var(--gold); width: 15px; height: 15px; }
+
+  .poolline {
+    margin-top: 18px; padding-top: 14px;
+    border-top: 3px double var(--rule);
+    font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft);
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  .poolline b { color: var(--eyebrow); font-size: 15px; font-variant-numeric: tabular-nums; }
+
+  footer { text-align: center; margin-top: 30px; color: var(--muted); font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; line-height: 1.8; }
+  footer a { color: var(--eyebrow); }
+
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    .tierbars { grid-template-columns: repeat(3, 1fr); }
+    .card .meta { gap: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="mark"><span class="gild">Combat Achievement</span><span class="rl gild">Roulette</span></h1>
+    <div class="flourish" aria-hidden="true"><i></i></div>
+    <p class="tagline">Stop scrolling the task list. Let the wheel decide what you grind tonight.</p>
+  </header>
+
+  <section class="panel" id="profile" aria-live="polite">
+    <div class="prof-top">
+      <span class="prof-name" id="pName">&mdash;</span>
+      <div class="prof-actions">
+        <button class="tiny ghost" id="resetMarksBtn" hidden>Undo local marks</button>
+        <button class="tiny ghost" id="switchBtn" hidden>Switch</button>
+        <button class="tiny ghost" id="reimportBtn">Re-import</button>
+      </div>
+    </div>
+    <div class="prof-stats" id="pStats"></div>
+    <div class="tierbars" id="tierbars"></div>
+    <div class="reset-confirm" id="resetConfirm" hidden>
+      <span id="resetConfirmText">Clear every task you ticked off on this site?</span>
+      <button class="tiny" id="resetYes">Yes, clear them</button>
+      <button class="tiny ghost" id="resetNo">Keep them</button>
+    </div>
+  </section>
+
+  <section class="panel" id="import">
+    <h2>Load your progress</h2>
+    <p>This picks a random Combat Achievement you <em>haven&rsquo;t done yet</em>. To know which ones those are, it needs the JSON file written by the <strong>CA Roulette Export</strong> RuneLite plugin.</p>
+    <div class="drop" id="drop">
+      <span class="label">Drop your <code style="text-transform:none">&lt;name&gt;.json</code> here</span>
+      <button class="primary" id="pickBtn" style="padding:11px 22px">Choose file</button>
+      <input type="file" id="file" accept="application/json,.json" hidden>
+    </div>
+    <div class="err" id="err"></div>
+    <details class="help">
+      <summary>How do I get that file?</summary>
+      <ol>
+        <li>Run the CA Roulette Export plugin in RuneLite (developer mode: <code>gradlew.bat run</code>).</li>
+        <li>Log in, wait a few seconds, open your bank once, then type <code>::caexport</code> in the chat box.</li>
+        <li>It writes <code>%USERPROFILE%\.runelite\ca-roulette\&lt;name&gt;.json</code> &mdash; drop that file above.</li>
+      </ol>
+      <p style="font-size:13px;margin-top:10px">Nothing you load here leaves your browser. It&rsquo;s saved locally so you don&rsquo;t have to re-import every visit.</p>
+    </details>
+  </section>
+
+  <section class="panel" id="stage">
+    <span class="label">Your next task</span>
+    <div class="card empty" id="card">
+      <div class="taskname" id="cardBody">Load a profile, then spin.</div>
+    </div>
+    <div class="spin-row">
+      <button class="primary" id="spinBtn" disabled>Spin</button>
+      <button id="doneBtn" class="good" hidden>I did it &checkmark;</button>
+      <button id="skipBtn" class="ghost" hidden>Not now</button>
+    </div>
+    <div class="spin-row" id="undoRow" hidden>
+      <button id="undoBtn" class="ghost tiny">Undo last &ldquo;I did it&rdquo;</button>
+    </div>
+  </section>
+
+  <section class="panel" id="filters">
+    <div class="row">
+      <span class="label">Tiers</span>
+      <div class="chips" id="tierChips"></div>
+    </div>
+    <div class="row">
+      <span class="label">Task type</span>
+      <div class="chips" id="typeChips"></div>
+    </div>
+    <div class="row">
+      <span class="label">Boss / activity</span>
+      <div class="fila">
+        <input type="text" id="monsterFilter" placeholder="filter by boss name, e.g. vorkath" autocomplete="off">
+        <button class="tiny ghost" id="monsterClear">clear</button>
+      </div>
+    </div>
+    <div class="row fila" id="blockRow">
+      <label class="toggle"><input type="checkbox" id="hideBlocked"> Hide tasks I can&rsquo;t start yet</label>
+      <span class="label" id="blockNote" style="letter-spacing:.04em;text-transform:none;font-style:italic"></span>
+    </div>
+    <div class="poolline">
+      <span>In the pool right now: <b id="poolCount">&mdash;</b> tasks</span>
+      <span id="poolBreak"></span>
+    </div>
+  </section>
+
+  <footer>
+    Task data from the <a href="https://oldschool.runescape.wiki/w/Combat_Achievements/All_tasks">OSRS Wiki</a>, joined to your plugin export by task id.<br>
+    Not affiliated with Jagex. Your data stays in this browser (localStorage).
+  </footer>
+</div>
+
+<script>window.CA_DATA={"monsters":["Aberrant Spectre","Abyssal Sire","Alchemical Hydra","Amoxliatl","Araxxor","Barrows","Basilisk Knight","Black Dragon","Bloodveld","Brutal Black Dragon","Brutus","Bryophyta","Callisto","Cerberus","Chambers of Xeric","Chambers of Xeric: Challenge Mode","Chaos Elemental","Chaos Fanatic","Commander Zilyana","Corporeal Beast","Corrupted Hunllef","Crazy Archaeologist","Crystalline Hunllef","Dagannoth Prime","Dagannoth Rex","Dagannoth Supreme","Demonic Gorilla","Deranged Archaeologist","Doom of Mokhaiotl","Duke Sucellus","Fire Giant","Fortis Colosseum","Fragment of Seren","Galvek","Gargoyle","General Graardor","Giant Mole","Giants","Glough","Greater Demon","Grotesque Guardians","Hellhound","Hespori","K'ril Tsutsaroth","Kalphite Queen","King Black Dragon","Kraken","Kree'arra","Kurask","Leviathan","Lizardman Shaman","Mad Angel","Maggot King","Moons of Peril","N/A","Nex","Obor","Phantom Muspah","Phosani's Nightmare","Royal Titans","Sarachnis","Scorpia","Scurrius","Shellbane gryphon","Skeletal Wyvern","Skotizo","Tempoross","The Hueycoatl","The Mimic","The Nightmare","Theatre of Blood","Theatre of Blood: Entry Mode","Theatre of Blood: Hard Mode","Thermonuclear Smoke Devil","Tombs of Amascut","Tombs of Amascut: Entry Mode","Tombs of Amascut: Expert Mode","Tormented Demon","TzHaar-Ket-Rak's Challenges","TzKal-Zuk","TzTok-Jad","Vardorvis","Venenatis","Vet'ion","Vorkath","Whisperer","Wintertodt","Wyrm","Yama","Zalcano","Zulrah"],"types":["Kill Count","Mechanical","Perfection","Restriction","Speed","Stamina"],"tiers":["Easy","Medium","Hard","Elite","Master","Grandmaster"],"tasks":[[0,0,"Noxious Foe","Kill an Aberrant Spectre.",0,0,69.9],[1,1,"Abyssal Adept","Kill the Abyssal Sire 20 times.",0,2,31.3],[2,1,"Abyssal Veteran","Kill the Abyssal Sire 50 times.",0,3,28.8],[3,1,"They Grow Up Too Fast","Kill the Abyssal Sire without letting any Scion mature.",1,2,22.6],[4,1,"Respiratory Runner","Kill the Abyssal Sire after only stunning him once.",1,3,28.8],[5,1,"Don't Whip Me","Kill the Abyssal Sire without being hit by any external tentacles.",1,2,31.9],[6,1,"Demonic Rebound","Use the Vengeance spell to reflect the damage from the Abyssal Sire's explosion back to him.",1,3,18.0],[7,1,"Don't Stop Moving","Kill the Abyssal Sire without taking damage from any miasma pools.",2,2,30.4],[8,1,"Perfect Sire","Kill the Abyssal Sire without taking damage from the external tentacles, miasma pools, explosion or damage from the Abyssal Sire without praying the appropriate protection prayer.",2,3,29.2],[9,47,"Kree'arra Adept","Kill Kree'arra 50 times.",0,2,15.2],[10,47,"Kree'arra Veteran","Kill Kree'arra 100 times.",0,3,12.3],[11,47,"Collateral Damage","Kill Kree'arra in a private instance without ever attacking him directly.",1,4,6.2],[12,47,"Airborne Showdown","Finish off Kree'arra whilst all of his bodyguards are dead.",1,2,9.7],[13,47,"Swoop No More","Kill Kree'arra in a private instance without taking any melee damage from the boss or his bodyguards.",2,4,9.0],[14,47,"The Worst Ranged Weapon","Kill Kree'arra by only dealing damage to him with a salamander.",3,5,6.8],[15,47,"Feather Hunter","Kill Kree'arra 30 times in a private instance without leaving the room.",5,5,5.0],[16,35,"General Graardor Adept","Kill General Graardor 50 times.",0,2,27.1],[17,35,"General Graardor Veteran","Kill General Graardor 100 times.",0,3,22.6],[18,35,"Ourg Freezer","Kill General Graardor whilst he is immobilized [ sic ] .",1,2,17.9],[19,35,"Ourg Freezer II","Kill General Graardor without him attacking any players.",1,3,19.2],[20,35,"General Showdown","Finish off General Graardor whilst all of his bodyguards are dead.",1,2,12.4],[21,35,"Defence Matters","Kill General Graardor 2 times consecutively in a private instance without taking any damage from his bodyguards.",2,5,2.7],[22,35,"Keep Away","Kill General Graardor in a private instance without taking any damage from the boss or bodyguards.",2,5,6.2],[23,35,"Ourg Killer","Kill General Graardor 15 times in a private instance without leaving the room.",5,5,9.5],[24,5,"Barrows Novice","Open the Barrows chest 10 times.",0,0,66.1],[25,5,"Barrows Champion","Open the Barrows chest 25 times.",0,1,59.6],[26,5,"Can't Touch Me","Kill Dharok, Verac, Torag and Guthan without letting them attack you with melee.",1,1,29.1],[27,5,"Pray for Success","Kill all six Barrows Brothers and loot the Barrows chest without taking any damage from any of the brothers.",2,1,55.6],[28,5,"Defence? What Defence?","Kill any Barrows Brother using only magical damage.",3,0,74.4],[29,5,"Just Like That","Kill Karil using only damage dealt by special attacks.",3,2,41.0],[30,5,"Faithless Crypt Run","Kill all six Barrows Brothers and loot the Barrows chest without ever having more than 0 prayer points.",3,2,38.2],[31,6,"Reflecting on This Encounter","Kill a Basilisk Knight.",0,3,43.2],[32,7,"Big, Black and Fiery","Kill a Black Dragon.",0,0,80.9],[33,8,"The Demonic Punching Bag","Kill a Bloodveld.",0,0,79.5],[34,9,"Brutal, Big, Black and Firey","Kill a Brutal Black Dragon.",0,1,41.0],[35,11,"Bryophyta Novice","Open Bryophyta's chest once.",0,0,47.7],[36,11,"Bryophyta Champion","Open Bryophyta's chest 5 times.",0,1,31.5],[37,11,"Protection from Moss","Kill Bryophyta with the Protect from Magic prayer active.",1,0,42.6],[38,11,"Quick Cutter","Kill all 3 of Bryophyta's growthlings within 3 seconds of the first one dying.",1,1,38.9],[39,11,"Preparation Is Key","Kill Bryophyta without suffering any poison damage.",2,0,45.0],[40,11,"A Slow Death","Kill Bryophyta with either poison or venom being the final source of damage.",3,0,35.8],[41,11,"Fighting as Intended II","Kill Bryophyta on a free to play world.",3,0,34.7],[42,12,"Callisto Adept","Kill Callisto 10 times.",0,2,29.5],[43,12,"Callisto Veteran","Kill Callisto 20 times.",0,3,27.5],[44,65,"Skotizo Champion","Kill Skotizo once.",0,1,56.9],[45,65,"Skotizo Adept","Kill Skotizo 5 times.",0,2,47.7],[46,65,"Demonic Weakening","Kill Skotizo with no altars active.",1,1,45.3],[47,65,"Demon Evasion","Kill Skotizo without taking any damage.",2,3,25.7],[48,65,"Demonbane Weaponry","Kill Skotizo with a demonbane weapon equipped.",3,1,52.3],[49,65,"Up for the Challenge","Kill Skotizo without equipping a demonbane weapon.",3,3,31.0],[50,65,"Precise Positioning","Kill Skotizo with the final source of damage being a Chinchompa explosion.",3,4,22.2],[51,13,"Cerberus Veteran","Kill Cerberus 75 times.",0,3,29.3],[52,13,"Cerberus Master","Kill Cerberus 150 times.",0,4,27.3],[53,13,"Arooo No More","Kill Cerberus without any of the Summoned Souls being spawned.",1,4,30.7],[54,13,"Ghost Buster","Kill Cerberus after successfully negating 6 or more attacks from Summoned Souls.",1,3,28.4],[55,13,"Unrequired Antifire","Kill Cerberus without taking damage from any lava pools.",2,3,31.6],[56,13,"Anti-Bite Mechanics","Kill Cerberus without taking any melee damage.",2,3,31.2],[57,16,"Chaos Elemental Adept","Kill the Chaos Elemental 10 times.",0,2,23.2],[58,16,"Chaos Elemental Veteran","Kill the Chaos Elemental 25 times.",0,3,19.2],[59,16,"Hoarder","Kill the Chaos Elemental without it unequipping any of your items.",1,2,33.3],[60,16,"The Flincher","Kill the Chaos Elemental without taking any damage from its attacks.",2,2,18.8],[61,17,"Chaos Fanatic Champion","Kill the Chaos Fanatic 10 times.",0,1,29.8],[62,17,"Chaos Fanatic Adept","Kill the Chaos Fanatic 25 times.",0,2,24.6],[63,17,"Sorry, What Was That?","Kill the Chaos Fanatic without anyone being hit by his explosion attack.",2,1,35.5],[64,17,"Praying to the Gods","Kill the Chaos Fanatic 10 times without drinking any potion which restores prayer or leaving the Wilderness.",3,2,19.6],[65,19,"Corporeal Beast Veteran","Kill the Corporeal Beast 25 times.",0,3,13.7],[66,19,"Corporeal Beast Master","Kill the Corporeal Beast 50 times.",0,4,10.9],[67,19,"Hot on Your Feet","Kill the Corporeal Beast without anyone killing the dark core or taking damage from the dark core.",2,3,14.5],[68,19,"Finding the Weak Spot","Finish off the Corporeal Beast with a Halberd special attack.",3,3,12.7],[69,19,"Chicken Killer","Kill the Corporeal Beast solo.",3,3,14.5],[70,21,"Crazy Archaeologist Champion","Kill the Crazy Archaeologist 10 times.",0,1,42.9],[71,21,"Crazy Archaeologist Adept","Kill the Crazy Archaeologist 25 times.",0,2,35.8],[72,21,"Mage of the Ruins","Kill the Crazy Archaeologist with only magical attacks.",1,1,50.5],[73,21,"I'd Rather Not Learn","Kill the Crazy Archaeologist without anyone being hit by his \"Rain of Knowledge\" attack.",2,1,43.0],[74,26,"If Gorillas Could Fly","Kill a Demonic Gorilla.",0,3,60.1],[75,26,"Hitting Them Where It Hurts","Finish off a Demonic Gorilla with a demonbane weapon.",3,3,44.6],[76,27,"Deranged Archaeologist Novice","Kill the Deranged Archaeologist 10 times.",0,0,39.4],[77,27,"Deranged Archaeologist Champion","Kill the Deranged Archaeologist 25 times.",0,1,35.2],[78,27,"Mage of the Swamp","Kill the Deranged Archaeologist with only magical attacks.",1,1,41.7],[79,27,"I'd Rather Be Illiterate","Kill the Deranged Archaeologist without anyone being hit by his \"Learn to Read\" attack.",2,1,41.3],[80,30,"The Walking Volcano","Kill a Fire Giant.",0,0,83.7],[81,33,"Galvek Speed-Trialist","Kill Galvek in less than 3 minutes.",4,3,7.0],[82,40,"Grotesque Guardians Adept","Kill the Grotesque Guardians 25 times.",0,2,32.2],[83,40,"Grotesque Guardians Veteran","Kill the Grotesque Guardians 50 times.",0,3,28.3],[84,40,"Don't Look at the Eclipse","Kill the Grotesque Guardians without taking damage from Dusk's blinding attack.",1,2,37.1],[85,40,"Prison Break","Kill the Grotesque Guardians without taking damage from Dusk's prison attack.",1,2,37.8],[86,40,"Granite Footwork","Kill the Grotesque Guardians without taking damage from Dawn's rockfall attack.",1,2,37.5],[87,40,"Heal No More","Kill the Grotesque Guardians without letting Dawn receive any healing from her orbs.",1,2,37.7],[88,40,"Static Awareness","Kill the Grotesque Guardians without being hit by any lightning attacks.",1,2,37.2],[89,40,"Done before Dusk","Kill the Grotesque Guardians before Dusk uses his prison attack for a second time.",1,3,37.6],[90,40,"Perfect Grotesque Guardians","Kill the Grotesque Guardians whilst completing the \"Don't look at the eclipse\", \"Prison Break\", \"Granite Footwork\", \"Heal no more\", \"Static Awareness\" and \"Done before dusk\" tasks.",2,3,35.3],[91,40,"Perfect Grotesque Guardians II","Kill the Grotesque Guardians 5 times in a row without leaving the instance, whilst completing the Perfect Grotesque Guardians task every time.",2,4,18.9],[92,40,"Grotesque Guardians Speed-Trialist","Kill the Grotesque Guardians in less than 2 minutes.",4,3,27.6],[93,40,"Grotesque Guardians Speed-Chaser","Kill the Grotesque Guardians in less than 1:40 minutes.",4,4,19.9],[94,40,"Grotesque Guardians Speed-Runner","Kill the Grotesque Guardians in less than 1:20 minutes.",4,5,9.4],[95,40,"From Dusk...","Kill the Grotesque Guardians 10 times without leaving the instance.",5,3,22.5],[96,40,"... 'til Dawn","Kill the Grotesque Guardians 20 times without leaving the instance.",5,4,14.0],[97,34,"A Smashing Time","Kill a Gargoyle.",0,1,59.2],[98,20,"Corrupted Gauntlet Veteran","Complete the Corrupted Gauntlet 5 times.",0,3,35.1],[99,20,"Corrupted Gauntlet Master","Complete the Corrupted Gauntlet 10 times.",0,4,33.2],[100,20,"Corrupted Gauntlet Grandmaster","Complete the Corrupted Gauntlet 50 times.",0,5,27.1],[101,20,"3, 2, 1 - Mage","Kill the Corrupted Hunllef without taking damage off prayer.",2,3,35.9],[102,20,"Perfect Corrupted Hunllef","Kill the Corrupted Hunllef without taking damage from: Tornadoes, Damaging Floor or Stomp Attacks. Also, do not take damage off prayer and do not attack the Corrupted Hunllef with the wrong weapon.",2,4,28.1],[103,20,"Defence Doesn't Matter II","Kill the Corrupted Hunllef without making any armour within the Corrupted Gauntlet.",3,4,9.7],[104,20,"Egniol Diet II","Kill the Corrupted Hunllef without making an egniol potion within the Corrupted Gauntlet.",3,5,9.9],[105,20,"Corrupted Warrior","Kill the Corrupted Hunllef with a full set of perfected corrupted armour equipped.",3,4,16.2],[106,20,"Wolf Puncher II","Kill the Corrupted Hunllef without making more than one attuned weapon.",3,5,15.9],[107,20,"Corrupted Gauntlet Speed-Chaser","Complete a Corrupted Gauntlet in less than 7 minutes and 5 seconds.",4,4,8.2],[108,20,"Corrupted Gauntlet Speed-Runner","Complete a Corrupted Gauntlet in less than 6 minutes and 5 seconds.",4,5,3.7],[109,22,"Gauntlet Veteran","Complete the Gauntlet 5 times.",0,3,42.8],[110,22,"Gauntlet Master","Complete the Gauntlet 20 times.",0,4,36.6],[111,22,"3, 2, 1 - Range","Kill the Crystalline Hunllef without taking damage off prayer.",2,3,32.6],[112,22,"Perfect Crystalline Hunllef","Kill the Crystalline Hunllef without taking damage from: Tornadoes, Damaging Floor or Stomp Attacks. Also, do not take damage off prayer and do not attack the Crystalline Hunllef with the wrong weapon.",2,4,19.4],[113,22,"Defence Doesn't Matter","Kill the Crystalline Hunllef without making any armour within the Gauntlet.",3,4,19.9],[114,22,"Egniol Diet","Kill the Crystalline Hunllef without making an egniol potion within the Gauntlet.",3,3,17.7],[115,22,"Crystalline Warrior","Kill the Crystalline Hunllef with a full set of perfected armour equipped.",3,3,21.9],[116,22,"Wolf Puncher","Kill the Crystalline Hunllef without making more than one attuned weapon.",3,3,20.6],[117,22,"Gauntlet Speed-Chaser","Complete the Gauntlet in less than 4 minutes and 45 seconds.",4,4,5.7],[118,22,"Gauntlet Speed-Runner","Complete the Gauntlet in less than 3 minutes and 45 seconds.",4,5,3.2],[119,38,"Glough Speed-Trialist","Kill Glough in less than 2 minutes and 30 seconds.",4,3,8.4],[120,39,"A Greater Foe","Kill a Greater Demon.",0,0,79.9],[121,39,"Not So Great After All","Finish off a Greater Demon with a demonbane weapon.",3,0,61.9],[122,41,"A Demon's Best Friend","Kill a Hellhound.",0,0,80.5],[123,42,"Hespori Adept","Kill Hespori 5 times.",0,2,59.3],[124,42,"Hesporisn't","Finish off Hespori with a special attack.",1,2,45.1],[125,42,"Weed Whacker","Kill all of Hesporis flowers within 5 seconds.",1,2,54.0],[126,42,"Plant-Based Diet","Kill Hespori without losing any prayer points.",3,3,32.6],[127,42,"Hespori Speed-Trialist","Kill the Hespori in less than 48 seconds.",4,3,23.2],[128,42,"Hespori Speed-Chaser","Kill the Hespori in less than 36 seconds.",4,4,10.0],[129,56,"Obor Novice","Open Obor's chest once.",0,0,47.0],[130,56,"Obor Champion","Open Obor's chest 5 times.",0,1,31.0],[131,56,"Sleeping Giant","Kill Obor whilst he is immobilized.",1,0,34.8],[132,56,"Back to the Wall","Kill Obor without being pushed back more than one square by his knockback attack.",1,1,42.2],[133,56,"Squashing the Giant","Kill Obor without taking any damage off prayer.",2,1,33.3],[134,56,"Fighting as Intended","Kill Obor on a free to play world.",3,0,33.4],[135,2,"Alchemical Veteran","Kill the Alchemical Hydra 75 times.",0,3,24.0],[136,2,"Alchemical Master","Kill the Alchemical Hydra 150 times.",0,4,22.6],[137,2,"Unrequired Antipoisons","Kill the Alchemical Hydra without being hit by the acid pool attack.",1,4,23.9],[138,2,"Lightning Lure","Kill the Alchemical Hydra without being hit by the lightning attack.",1,4,24.3],[139,2,"Don't Flame Me","Kill the Alchemical Hydra without being hit by the flame wall attack.",1,4,24.5],[140,2,"Mixing Correctly","Kill the Alchemical Hydra without empowering it.",1,4,23.3],[141,2,"The Flame Skipper","Kill the Alchemical Hydra without letting it spawn a flame wall attack.",1,4,20.2],[142,2,"Alcleanical Hydra","Kill the Alchemical Hydra without taking any damage.",2,4,23.1],[143,2,"No Pressure","Kill the Alchemical Hydra using only Dharok's Greataxe as a weapon whilst having no more than 10 Hitpoints throughout the entire fight.",3,5,8.3],[144,2,"Alchemical Speed-Chaser","Kill the Alchemical Hydra in less than 1 minute 45 seconds.",4,4,15.0],[145,2,"Alchemical Speed-Runner","Kill the Alchemical Hydra in less than 1 minute 20 seconds.",4,5,6.2],[146,2,"Working Overtime","Kill the Alchemical Hydra 15 times without leaving the room.",5,4,17.1],[147,80,"Fight Caves Veteran","Complete the Fight Caves once.",0,3,71.1],[148,80,"Fight Caves Master","Complete the Fight Caves 5 times.",0,4,23.1],[149,80,"A Near Miss!","Complete the Fight Caves after surviving a hit from TzTok-Jad without praying.",1,3,38.8],[150,80,"Denying the Healers","Complete the Fight caves without letting any of the Yt-MejKot heal.",1,4,21.0],[151,80,"Denying the Healers II","Complete the Fight Caves without TzTok-Jad being healed by a Yt-HurKot.",1,5,8.2],[152,80,"You Didn't Say Anything About a Bat","Complete the Fight Caves without being attacked by a Tz-Kih.",1,4,12.4],[153,80,"Facing Jad Head-on","Complete the Fight Caves with only melee.",3,3,13.1],[154,80,"No Time for a Drink","Complete the Fight Caves without losing any prayer points.",3,5,2.0],[155,80,"Fight Caves Speed-Chaser","Complete the Fight Caves in less than 30 minutes.",4,4,6.0],[156,80,"Fight Caves Speed-Runner","Complete the Fight Caves in less than 26 minutes and 30 seconds.",4,5,3.0],[157,44,"Kalphite Queen Adept","Kill the Kalphite Queen 25 times.",0,2,26.0],[158,44,"Kalphite Queen Veteran","Kill the Kalphite Queen 50 times.",0,3,23.0],[159,44,"Chitin Penetrator","Kill the Kalphite Queen while her defence was last lowered by you.",1,2,32.7],[160,44,"Insect Deflection","Kill the Kalphite Queen by using the Vengeance spell as the finishing blow.",1,3,19.7],[161,44,"Prayer Smasher","Kill the Kalphite Queen using only the Verac's Flail as a weapon.",3,3,17.5],[162,45,"King Black Dragon Novice","Kill the King Black Dragon 10 times.",0,0,43.4],[163,45,"King Black Dragon Champion","Kill the King Black Dragon 25 times.",0,1,37.4],[164,45,"Claw Clipper","Kill the King Black Dragon with the Protect from Melee prayer activated.",1,1,41.9],[165,45,"Hide Penetration","Kill the King Black Dragon with a stab weapon.",3,1,40.5],[166,45,"Antifire Protection","Kill the King Black Dragon with an antifire potion active and an antidragon shield equipped.",3,1,46.6],[167,45,"Who Is the King Now?","Kill The King Black Dragon 10 times in a private instance without leaving the instance.",5,2,21.8],[168,46,"Kraken Adept","Kill the Kraken 20 times.",0,2,42.4],[169,46,"Unnecessary Optimisation","Kill the Kraken after killing all four tentacles.",1,2,32.8],[170,46,"Krakan't Hurt Me","Kill the Kraken 25 times in a private instance without leaving the room.",5,2,36.2],[171,46,"Ten-tacles","Kill the Kraken 50 times in a private instance without leaving the room.",5,3,31.6],[172,46,"One Hundred Tentacles","Kill the Kraken 100 times in a private instance without leaving the room.",5,4,25.5],[173,48,"Master of Broad Weaponry","Kill a Kurask.",0,1,59.6],[174,50,"A Scaley Encounter","Kill a Lizardman Shaman.",0,0,59.1],[175,50,"Shayzien Protector","Kill a Lizardman Shaman in Molch which has not dealt damage to anyone (excluding its Spawns).",2,0,43.3],[176,68,"Mimic Veteran","Kill the Mimic once.",0,3,27.4],[177,36,"Giant Mole Novice","Kill the Giant Mole 10 times.",0,0,44.7],[178,36,"Giant Mole Champion","Kill the Giant mole 25 times.",0,1,40.4],[179,36,"Why Are You Running?","Kill the Giant Mole without her burrowing more than 2 times.",1,2,49.8],[180,36,"Hard Hitter","Kill the Giant Mole with 4 or fewer instances of damage.",1,3,28.4],[181,36,"Whack-a-Mole","Kill the Giant Mole within 10 seconds of her resurfacing.",1,2,41.4],[182,36,"Avoiding Those Little Arms","Kill the Giant Mole without her damaging anyone.",2,1,51.8],[183,69,"Nightmare Adept","Kill The Nightmare once.",0,2,18.5],[184,69,"Nightmare Veteran","Kill The Nightmare 25 times.",0,3,10.3],[185,69,"Nightmare Master","Kill The Nightmare 50 times.",0,4,8.3],[186,69,"Terrible Parent","Kill the Nightmare solo without the Parasites healing the boss for more than 100 health.",1,5,3.1],[187,69,"Explosion!","Kill two Husks at the same time.",1,3,6.1],[188,69,"Perfect Nightmare","Kill the Nightmare without any player taking damage from the following attacks: Nightmare rifts, an un-cured parasite explosion, Corpse flowers or the Nightmare's Surge. Also, no player can take damage off prayer or have their attacks slowed by the Nightmare spores.",2,4,3.3],[189,69,"Sleep Tight","Kill the Nightmare solo.",3,3,5.4],[190,69,"A Long Trip","Kill the Nightmare without any player losing any prayer points.",3,5,3.1],[191,69,"Nightmare (Solo) Speed-Trialist","Defeat the Nightmare (Solo) in less than 23 minutes.",4,3,5.2],[192,69,"Nightmare (Solo) Speed-Chaser","Defeat the Nightmare (Solo) in less than 19 minutes.",4,4,4.1],[193,69,"Nightmare (Solo) Speed-Runner","Defeat the Nightmare (Solo) in less than 16 minutes.",4,5,2.7],[194,69,"Nightmare (5-Scale) Speed-Trialist","Defeat the Nightmare (5-scale) in less than 5 minutes.",4,3,7.5],[195,69,"Nightmare (5-Scale) Speed-Chaser","Defeat the Nightmare (5-scale) in less than 4 minutes.",4,4,4.3],[196,69,"Nightmare (5-Scale) Speed-Runner","Defeat the Nightmare (5-scale) in less than 3:30 minutes.",4,5,3.1],[197,23,"Dagannoth Prime Champion","Kill Dagannoth Prime 10 times.",0,1,36.6],[198,23,"Dagannoth Prime Adept","Kill Dagannoth Prime 25 times.",0,2,32.4],[199,23,"Death to the Seer King","Kill Dagannoth Prime whilst under attack by Dagannoth Supreme and Dagannoth Rex.",1,3,15.2],[200,23,"From One King to Another","Kill Prime using a Rune Thrownaxe special attack, bounced off Dagannoth Rex.",1,3,11.9],[201,24,"Dagannoth Rex Champion","Kill Dagannoth Rex 10 times.",0,1,51.1],[202,24,"Dagannoth Rex Adept","Kill Dagannoth Rex 25 times.",0,2,47.2],[203,24,"Death to the Warrior King","Kill Dagannoth Rex whilst under attack by Dagannoth Supreme and Dagannoth Prime.",1,3,17.0],[204,24,"A Frozen King","Kill Dagannoth Rex whilst he is immobilized.",1,1,24.7],[205,24,"Toppling the Diarchy","Kill Dagannoth Rex and one other Dagannoth king at the exact same time.",1,3,8.7],[206,60,"Sarachnis Novice","Kill Sarachnis 10 times.",0,0,41.4],[207,60,"Sarachnis Champion","Kill Sarachnis 25 times.",0,1,36.6],[208,60,"Ready to Pounce","Kill Sarachnis without her using her range attack twice in a row.",1,2,37.3],[209,60,"Inspect Repellent","Kill Sarachnis without her dealing damage to anyone.",2,2,41.2],[210,60,"Newspaper Enthusiast","Kill Sarachnis with a crush weapon.",3,1,44.3],[211,18,"Commander Zilyana Adept","Kill Commander Zilyana 50 times.",0,2,19.5],[212,18,"Commander Zilyana Veteran","Kill Commander Zilyana 100 times.",0,3,15.2],[213,18,"Commander Showdown","Finish off Commander Zilyana while all of her bodyguards are dead.",1,2,12.9],[214,18,"Animal Whisperer","Kill Commander Zilyana in a private instance without taking any damage from the boss or bodyguards.",2,5,7.4],[215,18,"Moving Collateral","Kill Commander Zilyana in a private instance without attacking her directly.",3,4,6.3],[216,18,"Reminisce","Kill Commander Zilyana in a private instance with melee only.",3,3,7.6],[217,18,"Peach Conjurer","Kill Commander Zilyana 50 times in a privately rented instance without leaving the room.",5,5,5.6],[218,61,"Scorpia Adept","Kill Scorpia 10 times.",0,2,21.5],[219,61,"Scorpia Veteran","Kill Scorpia 25 times.",0,3,18.2],[220,61,"I Can't Reach That","Kill Scorpia without taking any damage from her.",2,2,24.5],[221,61,"Guardians No More","Kill Scorpia without killing her guardians.",3,2,30.2],[222,32,"Fragment of Seren Speed-Trialist","Kill The Fragment of Seren in less than 4 minutes.",4,3,6.7],[223,64,"A Frozen Foe from the Past","Kill a Skeletal Wyvern",0,1,61.9],[224,90,"Zulrah Adept","Kill Zulrah 25 times.",0,2,38.9],[225,90,"Zulrah Veteran","Kill Zulrah 75 times.",0,3,34.4],[226,90,"Zulrah Master","Kill Zulrah 150 times.",0,4,30.7],[227,90,"Snake Rebound","Kill Zulrah by using the Vengeance spell as the finishing blow.",1,3,19.5],[228,90,"Snake. Snake!? Snaaaaaake!","Kill 3 Snakelings simultaneously.",1,3,34.1],[229,90,"Perfect Zulrah","Kill Zulrah whilst taking no damage from the following: Snakelings, Venom Clouds, Zulrah's Green or Crimson phase.",2,4,16.7],[230,90,"Zulrah Speed-Trialist","Kill Zulrah in less than 1 minute 20 seconds, without a slayer task.",4,3,30.4],[231,90,"Zulrah Speed-Chaser","Kill Zulrah in less than 1 minute, without a slayer task.",4,4,20.2],[232,90,"Zulrah Speed-Runner","Kill Zulrah in less than 54 seconds, without a slayer task.",4,5,16.0],[233,25,"Dagannoth Supreme Champion","Kill Dagannoth Supreme 10 times.",0,1,36.1],[234,25,"Dagannoth Supreme Adept","Kill Dagannoth Supreme 25 times.",0,2,31.8],[235,25,"Death to the Archer King","Kill Dagannoth Supreme whilst under attack by Dagannoth Prime and Dagannoth Rex.",1,3,24.8],[236,25,"Rapid Succession","Kill all three Dagannoth Kings within 9 seconds of the first one.",1,3,9.1],[237,70,"Theatre of Blood Veteran","Complete the Theatre of Blood 25 times.",0,3,10.8],[238,70,"Theatre of Blood Master","Complete the Theatre of Blood 75 times.",0,4,8.2],[239,70,"Theatre of Blood Grandmaster","Complete the Theatre of Blood 150 times.",0,5,6.4],[240,70,"Two-Down","Kill the Pestilent Bloat before he shuts down for the third time.",1,4,14.0],[241,70,"Pop It","Kill Verzik without any Nylocas being frozen and without anyone taking damage from the Nylocas.",1,4,6.1],[242,70,"A Timely Snack","Kill Sotetseg after surviving at least 3 ball attacks without sharing the damage and without anyone dying throughout the fight.",1,4,5.7],[243,70,"Perfect Theatre","Complete the Theatre of Blood without anyone dying through any means and whilst everyone in the team completes the following Combat Achievement tasks in a single run: \"Perfect Maiden\", \"Perfect Bloat\", \"Perfect Nylocas\", \"Perfect Sotetseg\", \"Perfect Xarpus\" and \"Perfect Verzik\".",2,5,1.5],[244,70,"Perfect Maiden","Kill The Maiden of Sugadinti without anyone in the team taking damage from the following sources: Blood Spawn projectiles and Blood Spawn trails. Also, without taking damage off prayer and without letting any of the Nylocas Matomenos heal The Maiden.",2,4,6.8],[245,70,"Perfect Bloat","Kill the Pestilent Bloat without anyone in the team taking damage from the following sources: Pestilent flies, Falling body parts or The Pestilent Bloats stomp attack.",2,4,9.4],[246,70,"Perfect Nylocas","Kill the Nylocas Vasilias without anyone in the team attacking any Nylocas with the wrong attack style, without letting a pillar collapse and without getting hit by any of the Nylocas Vasilias attacks whilst off prayer.",2,4,3.9],[247,70,"Perfect Sotetseg","Kill Sotetseg without anyone in the team stepping on the wrong tile in the maze, without getting hit by the tornado and without taking any damage from Sotetseg's attacks whilst off prayer.",2,4,6.9],[248,70,"Perfect Xarpus","Kill Xarpus without anyone in the team taking any damage from Xarpus' attacks and without letting an exhumed heal Xarpus more than twice.",2,4,3.6],[249,70,"Perfect Verzik","Defeat Verzik Vitur without anyone in the team taking damage from Verzik Vitur's attacks other than her spider form's correctly prayed against regular magical and ranged attacks.",2,4,1.8],[250,70,"Can't Drain This","Kill The Maiden of Sugadinti without anyone in the team losing any prayer points.",3,4,3.9],[251,70,"Can You Dance?","Kill Xarpus without anyone in the team using a ranged or magic weapon.",3,4,8.0],[252,70,"Morytania Only","Complete the Theatre of Blood without any member of the team equipping a non-barrows weapon (except Dawnbringer).",3,5,2.4],[253,70,"Back in My Day...","Complete the Theatre of Blood without any member of the team equipping a Scythe of Vitur.",3,4,7.7],[254,70,"Theatre (Duo) Speed-Runner","Complete the Theatre of Blood (Duo) in less than 26 minutes.",4,5,2.1],[255,70,"Theatre (Trio) Speed-Chaser","Complete the Theatre of Blood (Trio) in less than 20 minutes.",4,4,6.5],[256,70,"Theatre (Trio) Speed-Runner","Complete the Theatre of Blood (Trio) in less than 17 minutes and 30 seconds.",4,5,2.7],[257,70,"Theatre (4-Scale) Speed-Chaser","Complete the Theatre of Blood (4-scale) in less than 17 minutes.",4,4,5.4],[258,70,"Theatre (4-Scale) Speed-Runner","Complete the Theatre of Blood (4-scale) in less than 15 minutes.",4,5,1.9],[259,70,"Theatre (5-Scale) Speed-Chaser","Complete the Theatre of Blood (5-scale) in less than 16 minutes.",4,4,3.8],[260,70,"Theatre (5-Scale) Speed-Runner","Complete the Theatre of Blood (5-scale) in less than 14 minutes and 15 seconds.",4,5,1.8],[261,73,"Thermonuclear Veteran","Kill the Thermonuclear Smoke Devil 20 times.",0,3,28.8],[262,73,"Hazard Prevention","Kill the Thermonuclear Smoke Devil without it hitting anyone.",2,3,20.7],[263,73,"Spec'd Out","Kill the Thermonuclear Smoke Devil using only special attacks.",3,3,19.3],[264,82,"Venenatis Adept","Kill Venenatis 10 times.",0,2,27.1],[265,82,"Venenatis Veteran","Kill Venenatis 20 times.",0,3,24.9],[266,83,"Vet'ion Adept","Kill Vet'ion 10 times.",0,2,34.9],[267,83,"Vet'eran","Kill Vet'ion 20 times.",0,3,32.6],[268,84,"Vorkath Veteran","Kill Vorkath 50 times.",0,3,45.2],[269,84,"Vorkath Master","Kill Vorkath 100 times.",0,4,33.5],[270,84,"The Walk","Hit Vorkath 12 times during the acid special without getting hit by his rapid fire or the acid pools.",1,4,12.4],[271,84,"Zombie Destroyer","Kill Vorkath's zombified spawn without using crumble undead.",3,3,21.9],[272,84,"Dodging the Dragon","Kill Vorkath 5 times without taking any damage from his special attacks and without leaving his area.",2,4,10.5],[273,84,"Stick 'em With the Pointy End","Kill Vorkath using melee weapons only.",3,3,25.6],[274,84,"Faithless Encounter","Kill Vorkath without losing any prayer points.",3,5,14.5],[275,84,"The Fremennik Way","Kill Vorkath with only your fists.",3,5,9.5],[276,84,"Vorkath Speed-Chaser","Kill Vorkath in less than 1 minute and 15 seconds.",4,4,20.6],[277,84,"Vorkath Speed-Runner","Kill Vorkath in less than 54 seconds.",4,5,5.9],[278,84,"Extended Encounter","Kill Vorkath 10 times without leaving his area.",5,4,8.0],[279,86,"Wintertodt Novice","Subdue the Wintertodt 5 times.",0,0,82.0],[280,86,"Wintertodt Champion","Subdue the Wintertodt 10 times.",0,1,80.0],[281,86,"Mummy!","Heal a pyromancer after they have fallen.",1,0,56.7],[282,86,"Handyman","Repair a brazier which has been destroyed by the Wintertodt.",1,0,77.1],[283,86,"Can We Fix It?","Subdue the Wintertodt without allowing all 4 braziers to be broken at the same time.",2,1,79.4],[284,86,"Leaving No One Behind","Subdue the Wintertodt without any of the Pyromancers falling.",3,1,74.9],[285,86,"Cosy","Subdue the Wintertodt with four pieces of warm equipment equipped.",3,0,77.4],[286,86,"Why Fletch?","Subdue the Wintertodt after earning 3000 or more points.",5,2,39.8],[287,87,"A Slithery Encounter","Kill a Wyrm.",0,0,69.0],[288,15,"Chambers of Xeric: CM Master","Complete the Chambers of Xeric: Challenge Mode 10 times.",0,4,10.6],[289,15,"Chambers of Xeric: CM Grandmaster","Complete the Chambers of Xeric: Challenge Mode 25 times.",0,5,8.3],[290,15,"Immortal Raid Team","Complete a Chambers of Xeric: Challenge mode raid without anyone dying.",2,4,12.3],[291,15,"Immortal Raider","Complete a Chambers of Xeric Challenge mode (Solo) raid without dying.",2,4,4.3],[292,15,"Dust Seeker","Complete a Chambers of Xeric Challenge mode raid in the target time.",4,3,15.4],[293,15,"Chambers of Xeric: CM (Solo) Speed-Chaser","Complete a Chambers of Xeric: Challenge Mode (Solo) in less than 45 minutes.",4,4,3.3],[294,15,"Chambers of Xeric: CM (Solo) Speed-Runner","Complete a Chambers of Xeric: Challenge Mode (Solo) in less than 38 minutes and 30 seconds.",4,5,2.5],[295,15,"Chambers of Xeric: CM (5-Scale) Speed-Chaser","Complete a Chambers of Xeric: Challenge Mode (5-scale) in less than 30 minutes.",4,4,4.5],[296,15,"Chambers of Xeric: CM (5-Scale) Speed-Runner","Complete a Chambers of Xeric: Challenge Mode (5-scale) in less than 25 minutes.",4,5,2.7],[297,15,"Chambers of Xeric: CM (Trio) Speed-Chaser","Complete a Chambers of Xeric: Challenge Mode (Trio) in less than 35 minutes.",4,4,8.8],[298,15,"Chambers of Xeric: CM (Trio) Speed-Runner","Complete a Chambers of Xeric: Challenge Mode (Trio) in less than 27 minutes.",4,5,3.8],[299,14,"Chambers of Xeric Veteran","Complete the Chambers of Xeric 25 times.",0,3,23.0],[300,14,"Chambers of Xeric Master","Complete the Chambers of Xeric 75 times.",0,4,17.2],[301,14,"Chambers of Xeric Grandmaster","Complete the Chambers of Xeric 150 times.",0,5,13.1],[302,14,"Perfectly Balanced","Kill the Vanguards without them resetting their health.",1,3,26.4],[303,14,"Together We'll Fall","Kill the Vanguards within 10 seconds of the first one dying.",1,3,19.6],[304,14,"No Time for Death","Clear the Tightrope room without Killing any Deathly Mages or Deathly Rangers.",1,4,16.1],[305,14,"Putting It Olm on the Line","Complete a Chambers of Xeric solo raid with more than 40,000 points.",1,4,5.4],[306,14,"A Not So Special Lizard","Kill the Great Olm in a solo raid without letting him use any of the following special attacks in his second to last phase: Crystal Burst, Lightning Walls, Teleportation Portals or left-hand autohealing.",1,4,6.1],[307,14,"Mutta-diet","Kill the Muttadile without letting her or her baby recover hitpoints from the meat tree.",1,3,34.2],[308,14,"Redemption Enthusiast","Kill the Abyssal Portal without forcing Vespula to land.",1,3,23.9],[309,14,"Stop Drop and Roll","Kill Vasa Nistirio before he performs his teleport attack for the second time.",1,4,23.2],[310,14,"Anvil No More","Kill Tekton before he returns to his anvil for a second time after the fight begins.",1,4,32.0],[311,14,"Dancing with Statues","Receive kill-credit for a Stone Guardian without taking damage from falling rocks.",2,3,28.3],[312,14,"Undying Raid Team","Complete a Chambers of Xeric raid without anyone dying.",2,3,29.9],[313,14,"Undying Raider","Complete a Chambers of Xeric solo raid without dying.",2,4,9.0],[314,14,"Shayzien Specialist","Receive kill-credit for a Lizardman Shaman without taking damage from any shamans in the room.",2,3,21.6],[315,14,"Playing with Lasers","Clear the Crystal Crabs room without wasting an orb after the first crystal has been activated.",2,4,28.2],[316,14,"Cryo No More","Receive kill-credit for the Ice Demon without taking any damage.",2,3,23.8],[317,14,"Perfect Olm (Solo)","Kill the Great Olm in a solo raid without taking damage from any of the following: Teleport portals, Fire Walls, Healing pools, Crystal Bombs, Crystal Burst or Prayer Orbs. You also cannot let his claws regenerate or take damage from the same acid pool back to back.",2,4,5.9],[318,14,"Perfect Olm (Trio)","Kill the Great Olm in a trio raid without any team member taking damage from any of the following: Teleport portals, Fire Walls, Healing pools, Crystal Bombs, Crystal Burst or Prayer Orbs. You also cannot let his claws regenerate or take damage from the same acid pool back to back.",2,4,3.8],[319,14,"Blind Spot","Kill Tekton without taking any damage.",2,4,19.6],[320,14,"Blizzard Dodger","Receive kill-credit for the Ice Demon without activating the Protect from Range prayer.",3,3,20.3],[321,14,"Kill It with Fire","Finish off the Ice Demon with a fire spell.",3,3,21.6],[322,14,"Chambers of Xeric (Solo) Speed-Chaser","Complete a Chambers of Xeric (Solo) in less than 21 minutes.",4,4,4.0],[323,14,"Chambers of Xeric (Solo) Speed-Runner","Complete a Chambers of Xeric (Solo) in less than 17 minutes.",4,5,2.5],[324,14,"Chambers of Xeric (5-Scale) Speed-Chaser","Complete a Chambers of Xeric (5-scale) in less than 15 minutes.",4,4,3.5],[325,14,"Chambers of Xeric (5-Scale) Speed-Runner","Complete a Chambers of Xeric (5-scale) in less than 12 minutes and 30 seconds.",4,5,3.0],[326,14,"Chambers of Xeric (Trio) Speed-Chaser","Complete a Chambers of Xeric (Trio) in less than 16 minutes and 30 seconds.",4,4,4.6],[327,14,"Chambers of Xeric (Trio) Speed-Runner","Complete a Chambers of Xeric (Trio) in less than 14 minutes and 30 seconds.",4,5,3.9],[328,89,"Zalcano Veteran","Kill Zalcano 25 times.",0,3,27.3],[329,89,"Perfect Zalcano","Kill Zalcano 5 times in a row without leaving or getting hit by the following: Falling rocks, rock explosions, Zalcano powering up, or standing in a red symbol.",2,3,19.0],[330,89,"Team Player","Receive imbued tephra from a golem.",1,3,25.1],[331,89,"The Spurned Hero","Kill Zalcano as the player who has dealt the most damage to her.",1,3,28.3],[332,43,"K'ril Tsutsaroth Adept","Kill K'ril Tsutsaroth 50 times.",0,2,21.6],[333,43,"K'ril Tsutsaroth Veteran","Kill K'ril Tsutsaroth 100 times.",0,3,16.6],[334,43,"Yarr No More","Receive kill-credit for K'ril Tsutsaroth without him using his special attack.",1,2,36.9],[335,43,"Demonic Showdown","Finish off K'ril Tsutsaroth whilst all of his bodyguards are dead.",1,2,12.1],[336,43,"The Bane of Demons","Defeat K'ril Tsutsaroth in a private instance using only demonbane spells.",1,3,8.6],[337,43,"Demonic Defence","Kill K'ril Tsutsaroth in a private instance without taking any of his melee hits.",2,3,14.2],[338,43,"Demon Whisperer","Kill K'ril Tsutsaroth in a private instance without ever being hit by his bodyguards.",2,5,9.9],[339,43,"Demonbane Weaponry II","Finish off K'ril Tsutsaroth with a demonbane weapon.",3,2,35.2],[340,43,"Ash Collector","Kill K'ril Tsutsaroth 20 times in a private instance without leaving the room.",5,5,10.3],[341,79,"Half-Way There","Kill a Jal-Zek within the Inferno.",0,3,19.4],[342,79,"Inferno Grandmaster","Complete the Inferno 5 times.",0,5,2.4],[343,79,"The Floor Is Lava","Kill Tzkal-Zuk without letting Jal-ImKot dig during any wave in the Inferno.",1,5,1.8],[344,79,"Playing with Jads","Complete wave 68 of the Inferno within 30 seconds of the first JalTok-Jad dying.",1,5,1.9],[345,79,"No Luck Required","Kill Tzkal-Zuk without being attacked by TzKal-Zuk and without taking damage from a JalTok-Jad.",2,5,10.6],[346,79,"Nibblers, Begone!","Kill Tzkal-Zuk without letting a pillar fall before wave 67.",2,4,6.6],[347,79,"Wasn't Even Close","Kill Tzkal-Zuk without letting your hitpoints fall below 50 during any wave in the Inferno.",3,5,2.4],[348,79,"Budget Setup","Kill Tzkal-Zuk without equipping a Twisted Bow within the Inferno.",3,5,9.2],[349,79,"Nibbler Chaser","Kill Tzkal-Zuk without using any magic spells during any wave in the Inferno.",3,5,1.8],[350,79,"Facing Jad Head-on II","Kill Tzkal-Zuk without equipping any range or mage weapons before wave 69.",3,5,1.6],[351,79,"Jad? What Are You Doing Here?","Kill Tzkal-Zuk without killing the JalTok-Jad which spawns during wave 69.",3,5,2.9],[352,79,"Inferno Speed-Runner","Complete the Inferno in less than 65 minutes.",4,5,2.1],[353,66,"Tempoross Novice","Subdue Tempoross 5 times.",0,0,70.1],[354,66,"Tempoross Champion","Subdue Tempoross 10 times.",0,1,66.5],[355,66,"Dress Like You Mean It","Subdue Tempoross while wearing any variation of the angler outfit.",3,2,48.2],[356,66,"Master of Buckets","Extinguish at least 5 fires during a single Tempoross fight.",1,0,60.9],[357,66,"Calm Before the Storm","Repair either a mast or a totem pole.",1,0,66.7],[358,66,"Why Cook?","Subdue Tempoross, getting rewarded with 10 reward permits from a single Tempoross fight.",1,2,31.2],[359,66,"The Lone Angler","Subdue Tempoross alone without getting hit by any fires, torrents or waves.",2,1,44.9],[360,66,"Fire in the Hole!","Attack Tempoross from both sides by loading both cannons on both ships.",1,0,40.1],[361,78,"The II Jad Challenge","Complete TzHaar-Ket-Rak's second challenge.",0,3,14.3],[362,78,"The IV Jad Challenge","Complete TzHaar-Ket-Rak's fourth challenge.",0,4,6.4],[363,78,"The VI Jad Challenge","Complete TzHaar-Ket-Rak's sixth challenge.",0,5,3.0],[364,78,"TzHaar-Ket-Rak's Speed-Trialist","Complete TzHaar-Ket-Rak's first challenge in less than 45 seconds.",4,3,7.1],[365,78,"TzHaar-Ket-Rak's Speed-Chaser","Complete TzHaar-Ket-Rak's third challenge in less than 3 minutes.",4,4,4.6],[366,78,"TzHaar-Ket-Rak's Speed-Runner","Complete TzHaar-Ket-Rak's fifth challenge in less than 5 minutes.",4,5,2.4],[367,78,"Facing Jad Head-on III","Complete TzHaar-Ket-Rak's second challenge with only melee.",3,3,9.2],[368,78,"Facing Jad Head-on IV","Complete TzHaar-Ket-Rak's fourth challenge with only melee.",3,4,4.5],[369,78,"Supplies? Who Needs 'em?","Complete TzHaar-Ket-Rak's third challenge without having anything in your inventory.",2,4,4.9],[370,78,"It Wasn't a Fluke","Complete TzHaar-Ket-Rak's fifth and sixth challenges back to back without failing.",2,5,2.3],[371,78,"Multi-Style Specialist","Complete TzHaar-Ket-Rak's third challenge while using a different attack style for each JalTok-Jad.",1,4,5.6],[372,72,"Stop Right There!","Defeat the Maiden of Sugadinti in the Theatre of Blood: Hard Mode without letting blood spawns create more than 15 blood trails.",1,5,3.8],[373,72,"Personal Space","Defeat the Pestilent Bloat in the Theatre of Blood: Hard Mode with at least 3 people in the room, without anyone in your team standing on top of each other.",1,5,1.8],[374,72,"Royal Affairs","In the Theatre of Blood: Hard Mode, complete the Nylocas room without ever letting the Nylocas Prinkipas change styles.",1,5,2.6],[375,72,"Harder Mode I","Defeat Sotetseg in the Theatre of Blood: Hard Mode without anyone sharing the ball with anyone, without anyone dying, and without anyone taking damage from any of its other attacks or stepping on the wrong tile in the maze.",2,5,1.9],[376,72,"Harder Mode II","Defeat Xarpus in the Theatre of Blood: Hard Mode after letting the exhumeds heal him to full health and without anyone in the team taking any damage.",2,5,1.6],[377,72,"Nylo Sniper","Defeat Verzik Vitur's in the Theatre of Blood: Hard Mode without anyone in your team causing a Nylocas to explode by getting too close.",1,5,2.1],[378,72,"Team Work Makes the Dream Work","When Verzik Vitur in the Theatre of Blood: Hard Mode uses her yellow power blast attack while the tornadoes are active, have everyone get through the attack without taking damage. This cannot be completed with one player alive",1,5,4.1],[379,72,"Harder Mode III","Defeat Verzik Vitur in the Theatre of Blood: Hard Mode without anyone attacking her with a melee weapon during her third phase.",3,5,1.7],[380,72,"Pack Like a Yak","Complete the Theatre of Blood: Hard Mode within the challenge time, with no deaths and without anyone buying anything from a supply chest.",3,5,1.8],[381,72,"Hard Mode? Completed It","Complete the Theatre of Blood: Hard Mode within the challenge time.",4,4,5.3],[382,72,"Theatre: HM (Trio) Speed-Runner","Complete the Theatre of Blood: Hard Mode (Trio) with an overall time of less than 23 minutes.",4,5,1.7],[383,72,"Theatre: HM (4-Scale) Speed-Runner","Complete the Theatre of Blood: Hard Mode (4-scale) with an overall time of less than 21 minutes.",4,5,2.7],[384,72,"Theatre: HM (5-Scale) Speed-Runner","Complete the Theatre of Blood: Hard Mode (5-scale) with an overall time of less than 19 minutes.",4,5,2.7],[385,72,"Theatre of Blood: HM Grandmaster","Complete the Theatre of Blood: Hard Mode 50 times.",0,5,3.0],[386,71,"Anticoagulants","Defeat the Maiden of Sugadinti in the Theatre of Blood: Entry Mode without letting any bloodspawn live for longer than 10 seconds.",1,3,31.9],[387,71,"Appropriate Tools","Defeat the Pestilent Bloat in the Theatre of Blood: Entry Mode with everyone having a salve amulet equipped.",1,3,30.4],[388,71,"They Won't Expect This","In the Theatre of Blood: Entry Mode, enter the Pestilent Bloat room from the opposite side.",1,3,21.4],[389,71,"Chally Time","Defeat the Pestilent Bloat in the Theatre of Blood: Entry Mode by using a halberd special attack as your final attack.",1,3,15.7],[390,71,"Nylocas, On the Rocks","In the Theatre of Blood: Entry Mode, freeze any 4 Nylocas with a single Ice Barrage spell.",1,3,14.1],[391,71,"Just To Be Safe","Defeat Sotetseg in the Theatre of Blood: Entry Mode after having split the big ball with your entire team. This must be done with a group size of at least 2.",1,3,22.6],[392,71,"Don't Look at Me!","Kill Xarpus in the Theatre of Blood: Entry Mode without him reflecting any damage to anyone.",1,3,28.3],[393,71,"No-Pillar","Survive Verzik Vitur's pillar phase in the Theatre of Blood: Entry Mode without losing a single pillar.",1,3,45.2],[394,71,"Attack, Step, Wait","Survive Verzik Vitur's second phase in the Theatre of Blood: Entry Mode without anyone getting bounced by Verzik.",1,3,18.3],[395,71,"Pass It On","In the Theatre of Blood: Entry Mode, successfully pass on the green ball to a team mate.",1,3,11.8],[396,71,"Theatre of Blood: SM Speed-Chaser","Complete the Theatre of Blood: Entry Mode in less than 17 minutes.",4,4,10.9],[397,71,"Theatre of Blood: SM Adept","Complete the Theatre of Blood: Entry Mode 1 time.",0,2,49.1],[398,37,"Into the Den of Giants","Kill a Hill Giant, Moss Giant and Fire Giant in the Giant Cave within the Shayzien region.",0,0,38.4],[399,54,"Sit Back and Relax","Deal 100 damage to creatures using undead thralls.",1,1,55.4],[400,58,"Phosani's Veteran","Kill Phosani's Nightmare once.",0,3,9.0],[401,58,"Phosani's Master","Kill Phosani's Nightmare 5 times.",0,4,7.9],[402,58,"Phosani's Grandmaster","Kill Phosani's Nightmare 25 times.",0,5,6.7],[403,58,"Perfect Phosani's Nightmare","Kill Phosani's Nightmare while only taking damage from husks, power blasts and weakened Parasites. Also, without having your attacks slowed by the Nightmare Spores or letting a Sleepwalker reach Phosani's Nightmare.",2,5,5.5],[404,58,"Phosani's Speedchaser","Kill Phosani's Nightmare within 7 minutes and 30 seconds.",4,4,7.5],[405,58,"Phosani's Speedrunner","Kill Phosani's Nightmare within 6 minutes.",4,5,5.5],[406,58,"Crush Hour","Kill Phosani's Nightmare while killing every parasite and husk in one hit.",1,4,7.7],[407,58,"I Would Simply React","Kill Phosani's Nightmare without allowing your prayer to be disabled.",1,4,7.2],[408,58,"Dreamland Express","Kill Phosani's Nightmare without a sleepwalker reaching her during her desperation phase.",1,4,7.6],[409,58,"Can't Wake Up","Kill Phosani's Nightmare 5 times in a row without leaving Phosani's Dream.",5,5,3.8],[410,55,"Nex Veteran","Kill Nex once.",0,3,23.8],[411,55,"Nex Master","Kill Nex 25 times.",0,4,18.6],[412,55,"Nex Survivors","Kill Nex without anyone dying.",3,3,22.7],[413,55,"A siphon will solve this","Kill Nex without letting her heal from her Blood Siphon special attack.",1,4,21.0],[414,55,"Contain this!","Kill Nex without anyone taking damage from any Ice special attack.",1,4,22.6],[415,55,"There is no escape!","Kill Nex without anyone being hit by the Smoke Dash special attack.",1,4,22.9],[416,55,"Nex Trio","Kill Nex with three or less players at the start of the fight.",3,4,8.6],[417,55,"Nex Duo","Kill Nex with two or less players at the start of the fight.",3,5,4.3],[418,55,"I should see a doctor","Kill Nex whilst a player is coughing.",3,5,16.0],[419,55,"Perfect Nex","Kill Nex whilst completing the requirements for \"There is no escape\", \"Shadows move\", \"A siphon will solve this\", and \"Contain this!\"",2,5,17.5],[420,55,"Shadows Move...","Kill Nex without anyone being hit by the Shadow Smash attack.",1,4,22.6],[421,74,"Tombs Speed Runner","Complete the Tombs of Amascut (normal) within 18 mins at any group size.",4,4,3.1],[422,76,"Tombs Speed Runner II","Complete the Tombs of Amascut (expert) within 20 mins at any group size.",4,5,2.5],[423,76,"Tombs Speed Runner III","Complete the Tombs of Amascut (expert) within 18 mins in a group of 8.",4,5,2.1],[424,74,"You are not prepared","Complete a full Tombs of Amascut raid only using supplies given inside the tomb and without anyone dying.",3,4,8.3],[425,74,"Helpful spirit who?","Complete the Tombs of Amascut without using any supplies from the Helpful Spirit and without anyone dying. Honey locusts are included in this restriction.",3,3,8.2],[426,76,"Resourceful Raider","Complete the Tombs of Amascut with the \"On a diet\" and \"Dehydration\" invocations activated and without anyone dying.",3,4,8.4],[427,76,"But... Damage","Complete the Tombs of Amascut without anyone in your party wearing or holding any equipment at tier 75 or above.",3,4,4.5],[428,74,"Chompington","Defeat Zebak using only melee attacks and without dying yourself.",1,4,11.1],[429,76,"Fancy feet","Complete phase three of The Wardens in a group of two or more, using only melee attacks and without dying yourself. The 'Insanity' invocation must be activated.",3,4,3.8],[430,74,"Hardcore Raiders","Complete the Tombs of Amascut in a group of two or more without anyone dying.",2,3,33.0],[431,74,"Hardcore Tombs","Complete the Tombs of Amascut solo without dying.",2,3,30.8],[432,74,"Perfect Het","Complete the Het room without taking any damage from the light beam and orbs. You must destroy the core after one exposure.",2,3,34.3],[433,74,"Perfect Akkha","Complete Akkha in a group of two or more, without anyone taking any damage from the following: Akkha's attacks off-prayer, Akkha's special attacks (orbs, memory, detonate), exploding shadow timers, orbs in the enrage phase or attacking Akkha with the wrong style. You must have all Akkha invocations activated.",2,4,3.0],[434,76,"Perfection of Het","Complete 'Perfect Het' and 'Perfect Akkha' in a single run of the Tombs of Amascut.",2,5,2.7],[435,74,"Perfect Apmeken","Complete the Apmeken room in a group of two or more, without anyone allowing any dangers to trigger, standing in venom or being hit by a volatile baboon. You must complete this room in less than three minutes.",2,3,29.5],[436,74,"Perfect Ba-Ba","Defeat Ba-Ba in a group of two or more, without anyone taking any damage from the following: Ba-Ba's Attacks off-prayer, Ba-Ba's slam, rolling boulders, rubble attack or falling rocks. No sarcophagi may be opened. You must have all Ba-Ba invocations activated.",2,4,9.9],[437,76,"Perfection of Apmeken","Complete 'Perfect Apmeken' and 'Perfect Ba-Ba' in a single run of the Tombs of Amascut.",2,5,6.9],[438,74,"Perfect Crondis","Complete the Crondis room without letting a crocodile get to the tree, without anyone losing water from their container and in under one minute.",2,3,35.2],[439,74,"Perfect Zebak","Defeat Zebak without anyone taking any damage from: poison, Zebak's basic attacks off-prayer, blood spawns and waves. You also must not push more than two jugs on the roar attack during the fight (you may destroy stationary ones). You must have all Zebak invocations activated.",2,4,16.7],[440,76,"Perfection of Crondis","Complete 'Perfect Crondis' and 'Perfect Zebak' in a single run of the Tombs of Amascut.",2,5,13.2],[441,74,"Perfect Scabaras","Complete the Scabaras room in less than a minute without anyone taking any damage from puzzles.",2,4,35.1],[442,74,"Perfect Kephri","Defeat Kephri in a group of two or more, without anyone taking any damage from the following: egg explosions, Kephri's attacks, Exploding Scarabs, Bodyguards, dung attacks. No eggs may hatch throughout the fight.",2,4,9.5],[443,76,"Perfection of Scabaras","Complete 'Perfect Scabaras' and 'Perfect Kephri' in a single run of Tombs of Amascut.",2,5,6.5],[444,74,"Perfect Wardens","Defeat The Wardens in a group of two or more, without anyone taking avoidable damage from the following: Warden attacks, obelisk attacks, lightning attacks in phase three, skull attack in phase three, Demi god attacks in phase three. You must have all Wardens invocations activated.",2,4,2.8],[445,76,"Insanity","Complete 'Perfect Wardens' at expert or above.",2,5,2.6],[446,76,"Amascut's Remnant","Complete the Tombs of Amascut at raid level 500 or above without anyone dying.",1,5,7.5],[447,76,"Something of an expert myself","Complete the Tombs of Amascut raid at level 350 or above without anyone dying.",1,4,20.6],[448,76,"Maybe I'm the boss.","Complete a Tombs of Amascut raid with every single boss invocation activated and without anyone dying.",1,5,2.8],[449,74,"Dropped the ball","Defeat Akkha without dropping any materialising orbs and without dying yourself.",1,3,36.9],[450,76,"Akkhan't Do it","Defeat Akkha with all Akkha invocations activated and the path levelled up to at least four, without dying yourself.",1,5,3.8],[451,74,"No skipping allowed","Defeat Ba-Ba after only attacking the non-weakened boulders in the rolling boulder phase, without dying yourself. The Boulderdash invocation must be activated.",1,3,9.8],[452,74,"I'm in a rush","Defeat Ba-Ba after destroying four or fewer rolling boulders in total without dying yourself.",1,3,26.1],[453,76,"Ba-Bananza","Defeat Ba-Ba with all Ba-Ba invocations activated and the path levelled up to at least four, without dying yourself.",1,4,11.0],[454,76,"All Praise Zebak","Defeat Zebak without losing a single prayer point. You must also meet the conditions of the 'Rockin' Around The Croc' achievement.",1,5,2.5],[455,76,"Rockin' around the croc","Defeat Zebak with all Zebak invocations activated and the path levelled up to at least four, without dying yourself.",1,4,8.5],[456,76,"Doesn't bug me","Defeat Kephri with all Kephri invocations activated and the path levelled up to at least four, without dying yourself.",1,4,3.6],[457,76,"All out of medics","Defeat Kephri without letting her heal above 25% after the first down. The 'Medic' invocation must be activated. You must do this without dying yourself.",1,4,6.8],[458,74,"Down Do Specs","Defeat the Wardens after staggering the boss a maximum of twice during phase two, without dying yourself.",1,3,22.9],[459,74,"Better get movin'","Defeat Elidinis' Warden in phase three of the Wardens fight with 'Aerial Assault', 'Stay vigilant' and 'Insanity' invocations activated and without dying yourself.",1,4,20.0],[460,76,"Warden't you believe it","Defeat the Wardens with all Wardens invocations activated, at expert level and without dying yourself.",1,4,19.9],[461,75,"Novice Tomb Explorer","Complete the Tombs of Amascut in Entry mode (or above) once.",0,2,49.5],[462,75,"Novice Tomb Looter","Complete the Tombs of Amascut in Entry mode (or above) 25 times.",0,2,29.2],[463,75,"Novice Tomb Raider","Complete the Tombs of Amascut in Entry mode (or above) 50 times.",0,3,23.0],[464,75,"Movin' on up","Complete a Tombs of Amascut raid at level 50 or above.",3,2,46.8],[465,75,"Confident Raider","Complete a Tombs of Amascut raid at level 100 or above.",3,2,45.3],[466,74,"Tomb Looter","Complete the Tombs of Amascut 25 times.",0,4,27.6],[467,74,"Tomb Raider","Complete the Tombs of Amascut 50 times.",0,4,22.0],[468,74,"Tomb Explorer","Complete the Tombs of Amascut once.",0,3,44.6],[469,76,"Expert Tomb Explorer","Complete the Tombs of Amascut (Expert mode) once.",0,3,30.9],[470,76,"Expert Tomb Looter","Complete the Tombs of Amascut (Expert mode) 25 times.",0,4,18.2],[471,76,"Expert Tomb Raider","Complete the Tombs of Amascut (Expert mode) 50 times.",0,5,14.4],[472,57,"More than just a ranged weapon","Kill the Phantom Muspah by only dealing damage to it with a salamander.",3,4,7.5],[473,57,"Can't Escape","Kill the Phantom Muspah without running.",3,3,15.4],[474,57,"Essence Farmer","Kill the Phantom Muspah 10 times in one trip.",5,4,10.4],[475,57,"Phantom Muspah Speed-Trialist","Kill the Phantom Muspah in less than 3 minutes without a slayer task.",4,3,22.1],[476,57,"Phantom Muspah Speed-Chaser","Kill the Phantom Muspah in less than 2 minutes without a slayer task.",4,4,8.8],[477,57,"Phantom Muspah Speed-Runner","Kill the Phantom Muspah in less than 1 minute and 30 seconds without a slayer task.",4,5,3.5],[478,57,"Phantom Muspah Adept","Kill the Phantom Muspah.",0,2,32.4],[479,57,"Phantom Muspah Veteran","Kill the Phantom Muspah 25 times.",0,3,25.6],[480,57,"Phantom Muspah Master","Kill the Phantom Muspah 50 times.",0,4,22.4],[481,57,"Space is Tight","Kill the Phantom Muspah whilst it is surrounded by spikes.",1,4,19.8],[482,57,"Versatile Drainer","Drain the Phantom Muspah's Prayer with three different sources in one kill.",1,3,18.3],[483,57,"Walk Straight Pray True","Kill the Phantom Muspah without taking any avoidable damage.",2,4,23.4],[484,57,"Phantom Muspah Manipulator","Kill the Phantom Muspah whilst completing Walk Straight Pray True, Space is Tight & Can't Escape.",2,5,6.9],[485,81,"Vardorvis Speed-Trialist","Kill Vardorvis in less than 1:15 minutes without a slayer task.",4,3,15.5],[486,81,"Vardorvis Speed-Chaser","Kill Vardorvis in less than 1:05 without a slayer task.",4,4,12.6],[487,81,"Vardorvis Speed-Runner","Kill Vardorvis in less than 0:55 without a slayer task.",4,5,7.9],[488,81,"Vardorvis Adept","Kill Vardorvis once.",0,3,25.2],[489,81,"Vardorvis Master","Kill Vardorvis 50 times.",0,4,17.6],[490,81,"Vardorvis Sleeper","Kill Awakened Vardorvis.",0,5,4.3],[491,81,"Perfect Vardorvis","Kill Vardorvis perfectly 5 times without leaving.",2,4,10.9],[492,81,"Axe Enthusiast","Kill Vardorvis after surviving for 3 minutes of Vardorvis' max speed, and never leaving the centre 25 tiles.",1,5,5.0],[493,81,"Budget Cutter","Kill Vardorvis with gear worth 2m or less in total.",3,4,10.4],[494,85,"Whisperer Speed-Trialist","Kill the Whisperer in less than 3:00 without a slayer task.",4,3,9.5],[495,85,"Whisperer Speed-Chaser","Kill the Whisperer in less than 2:25 without a slayer task.",4,4,5.6],[496,85,"Whisperer Speed-Runner","Kill the Whisperer in less than 2:05 without a slayer task.",4,5,2.7],[497,85,"Whisperer Adept","Kill the Whisperer once.",0,3,16.1],[498,85,"Whisperer Master","Kill the Whisperer 50 times.",0,4,9.6],[499,85,"Whispered","Kill the Awakened Whisperer.",0,5,3.9],[500,85,"Perfect Whisperer","Kill the Whisperer without taking avoidable damage 5 times without leaving.",2,4,6.7],[501,85,"Tentacular","Kill the Whisperer whilst only being on the Arceuus spellbook.",3,3,10.9],[502,85,"Dark Memories","Kill the Whisperer whilst spending less than 6 seconds in the pre-enrage shadow realm.",3,5,7.2],[503,49,"Leviathan Speed-Trialist","Kill the Leviathan in less than 1:50 without a slayer task.",4,3,8.9],[504,49,"Leviathan Speed-Chaser","Kill the Leviathan in less than 1:25 without a slayer task.",4,4,5.5],[505,49,"Leviathan Speed-Runner","Kill the Leviathan in less than 1:10 without a slayer task.",4,5,3.8],[506,49,"Leviathan Adept","Kill the Leviathan once.",0,3,17.2],[507,49,"Leviathan Master","Kill the Leviathan 50 times.",0,4,10.5],[508,49,"Leviathan Sleeper","Kill the Awakened Leviathan.",0,5,3.8],[509,49,"Perfect Leviathan","Kill the Leviathan perfectly 5 times without leaving.",2,4,6.0],[510,49,"Serpentine Solo","Kill the Leviathan without stunning the boss more than once.",1,4,13.3],[511,49,"Unconventional","Kill the Leviathan using only Mithril ammunition whilst having no more than 25 Hitpoints throughout the entire fight.",3,5,4.2],[512,29,"Duke Sucellus Speed-Trialist","Kill Duke Sucellus in less than 1:00 minutes without a slayer task.",4,3,16.3],[513,29,"Duke Sucellus Speed-Chaser","Kill Duke Sucellus in less than 50 seconds without a slayer task.",4,4,12.7],[514,29,"Duke Sucellus Speed-Runner","Kill Duke Sucellus in less than 40 seconds without a slayer task.",4,5,8.0],[515,29,"Duke Sucellus Adept","Kill Duke Sucellus once.",0,3,29.9],[516,29,"Duke Sucellus Master","Kill Duke Sucellus 50 times.",0,4,21.5],[517,29,"Duke Sucellus Sleeper","Kill Awakened Duke Sucellus.",0,5,4.0],[518,29,"Perfect Duke Sucellus","Kill Duke Sucellus without taking any avoidable damage 5 times without leaving.",2,4,17.9],[519,29,"Cold Feet","Kill Duke Sucellus without taking any avoidable damage, whilst also never running.",3,4,8.4],[520,29,"Mirror Image","Kill Duke Sucellus whilst only attacking the boss on the same tick Duke attacks you.",3,5,6.7],[521,62,"Scurrius Novice","Kill Scurrius once.",0,0,57.2],[522,62,"Scurrius Champion","Kill Scurrius 10 times.",0,1,48.1],[523,62,"Sit Rat","Finish off Scurrius with a ratbane weapon in a private instance.",3,0,37.3],[524,62,"Perfect Scurrius","Kill Scurrius in a private instance without taking damage from the following attacks: Tail Swipe and Falling Bricks. Pray correctly against the following attacks: Flying Fur and Bolts of Electricity.",2,1,42.0],[525,62,"Efficient Pest Control","Kill 6 Giant Rats within Scurrius' lair in 3 seconds.",1,1,34.4],[526,53,"The Clone Zone","Defeat the Eclipse moon by only attacking its clones.",1,2,37.4],[527,53,"High Hitter","Defeat a Moon before they start their second special attack.",1,3,52.4],[528,53,"Lunar Triplet","Open the Reward Chest after defeating all three Moons.",0,1,59.1],[529,53,"Perilous Novice","Open the Reward Chest 5 times.",0,1,50.9],[530,53,"Perilous Champion","Open the Reward Chest 25 times.",0,2,43.2],[531,53,"Perilous Dancer","Defeat all the Moons in one run while only taking damage from regular attacks.",2,2,31.1],[532,53,"Fortified","Defeat a Moon without consuming any supplies.",3,2,48.9],[533,53,"Betrayal","Defeat a Moon using its associated weapon drop.",3,2,32.1],[534,53,"Back to Our Roots","Defeat all three Moons in one run by only attacking with a Dragon Scimitar.",3,1,34.3],[535,53,"Moons of Peril Speed-Trialist","Defeat all three Moons in one run in under 8 minutes.",4,1,48.5],[536,53,"Moons of Peril Speed-Chaser","Defeat all three Moons in one run in under 6 minutes.",4,2,41.8],[537,53,"Fat of the Land","Defeat 30 Moons of Peril bosses without leaving the dungeon.",5,2,42.1],[538,31,"Sportsmanship","Defeat Sol Heredit once.",0,4,13.4],[539,31,"Colosseum Grand Champion","Defeat Sol Heredit 10 times.",0,5,3.3],[540,31,"I Brought Mine Too","Defeat Sol Heredit using only a Spear, Hasta or Halberd.",3,4,4.0],[541,31,"Slow Dancing in the Sand","Defeat Sol Heredit without running during the fight with him.",3,5,2.1],[542,31,"Furball","Complete Wave 4 without taking avoidable damage from a Manticore.",2,3,17.2],[543,31,"Perfect Footwork","Defeat Sol Heredit without taking any damage from his Spear, Shield, Grapple or Triple Attack.",2,5,4.4],[544,31,"Showboating","Defeat Sol Heredit after using Fortis Salute to the north, east, south and west of the arena while he is below 10% hitpoints.",1,4,2.1],[545,31,"Denied","Complete Wave 7 without the Minotaur ever healing other enemies.",1,3,15.4],[546,31,"One-off","Complete Wave 11 with either 'Red Flag', 'Dynamic Duo', or 'Doom II' active.",1,4,9.1],[547,31,"Reinforcements","Defeat Sol Heredit with \"Bees II\", \"Quartet\" and \"Solarflare II\" modifiers active.",1,5,1.7],[548,31,"I was here first!","Kill a Jaguar Warrior using a Claw-type weapon special attack.",1,3,10.4],[549,31,"Colosseum Speed-Chaser","Complete the Colosseum with a total time of 28:00 or less.",4,4,4.4],[550,31,"Colosseum Speed-Runner","Complete the Colosseum with a total time of 24:00 or less.",4,5,2.8],[551,77,"Unending Torment","Kill a Tormented Demon.",0,3,43.1],[552,77,"Through Fire and Flames","Kill a Tormented Demon whilst their shield is inactive.",3,3,42.0],[553,77,"Two Times the Torment","Kill two Tormented Demons within 2 seconds.",3,3,6.3],[554,77,"Three Times the Thrashing","Kill three Tormented Demons within 3 seconds.",3,4,4.5],[555,77,"Rapid Reload","Hit three Tormented Demons within 3 seconds using a ballista or a crossbow.",1,3,7.9],[556,4,"Araxxor Veteran","Kill Araxxor 25 times.",0,3,26.4],[557,4,"Araxxor Master","Kill Araxxor 75 times.",0,4,24.1],[558,4,"Araxxor Speed-Trialist","Kill Araxxor 4 times in 10:00.",4,3,24.8],[559,4,"Araxxor Speed-Chaser","Kill Araxxor 5 times in 10:00.",4,4,18.8],[560,4,"Araxxor Speed-Runner","Kill Araxxor 6 times in 10:00.",4,5,9.1],[561,4,"Perfect Araxxor","Kill Araxxor perfectly, without taking damage from Araxxor's Mage & Range attacks, melee attack off prayer, araxyte minions damage, or damage from acid pools.",2,4,19.3],[562,4,"Perfect Araxxor 2","Kill Araxxor perfectly, without hitting it during the enrage phase.",2,5,9.1],[563,4,"Let it seep in","Kill Araxxor without ever having venom or poison immunity.",3,4,17.8],[564,4,"Relaxxor","Kill Araxxor after destroying six eggs.",3,3,16.0],[565,4,"Swimming in Venom","Kill Araxxor without the boss ever moving.",3,5,21.4],[566,4,"Araxyte Betrayal","Have an Araxyte kill three other Araxytes.",1,4,12.7],[567,4,"Arachnid Lover","Kill Araxxor 10 times without leaving.",5,4,15.1],[568,67,"Hueycoatl Champion","Kill the Hueycoatl once.",0,1,41.3],[569,67,"Hueycoatl Adept","Kill the Hueycoatl 10 times.",0,2,36.3],[570,67,"Hueycoatl Veteran","Kill the Hueycoatl 25 times.",0,3,30.1],[571,67,"Perfect Hueycoatl","Kill the Hueycoatl perfectly 5 times without leaving. To get a perfect kill, you must not take any avoidable damage from the Hueycoatl's lightning attack, tail slam attack or off-prayer projectile attacks.",2,3,18.1],[572,67,"Pillar Lover","Kill the Hueycoatl whilst it is vulnerable.",1,2,33.4],[573,67,"Is it a bird?","Kill the Hueycoatl using only dragonbane weaponry.",3,4,19.0],[574,67,"You're a wizard","Kill the Hueycoatl using only earth spells.",3,1,23.6],[575,67,"I'm your son","Kill the Hueycoatl whilst wearing two pieces of Hueycoatl armour.",3,2,13.5],[576,67,"Hueycoatl Speed-Trialist","Kill the Hueycoatl in 2:30",4,3,33.6],[577,67,"Hueycoatl Speed-Chaser","Kill the Hueycoatl in 2:30 with five or fewer players.",4,4,13.7],[578,67,"Hueycoatl Speed-Runner","Kill the Hueycoatl in 2:30 with three or fewer players.",4,5,5.3],[579,3,"Amoxliatl Champion","Kill Amoxliatl once.",0,1,40.8],[580,3,"Amoxliatl Adept","Kill Amoxliatl 20 times.",0,2,32.7],[581,3,"Amoxliatl Speed-Trialist","Kill Amoxliatl in less than 1 minute.",4,2,28.0],[582,3,"Amoxliatl Speed-Chaser","Kill Amoxliatl in less than 30 seconds.",4,3,7.6],[583,3,"Nagua Negation","Kill Amoxliatl without taking any damage.",2,2,35.4],[584,3,"Temotli Triumph","Kill Amoxliatl using only glacial temotli as a weapon.",3,1,25.8],[585,3,"Without Ralos' Light","Kill Amoxliatl without losing any prayer points.",3,3,23.1],[586,3,"Kemo Makti","Kill Amoxliatl 10 times without leaving her chamber.",5,2,30.6],[587,3,"Totally Shattered","Kill Amoxliatl without any of her unstable ice shattering.",1,2,39.6],[588,59,"Perfect Royal Titans","Kill the Royal Titans without getting hit by any avoidable damage. This includes: Melee attacks, Explosions from the ice or fire elemental, Icicle or fire spawn damage, and Ice or fire pulse attacks.",2,2,37.6],[589,59,"Royal Titan Champion","Kill the Royal Titans 10 times.",0,1,45.2],[590,59,"Royal Titan Adept","Kill the Royal Titans 25 times.",0,1,41.4],[591,59,"One by one","Kill one Titan at a time, without attacking the other.",3,0,34.7],[592,59,"Royal Titan Speed-Runner","Kill the Royal Titans in less than 1:30 minutes.",4,2,28.1],[593,59,"Titan Killer","Kill the Royal Titans 15 times without anyone leaving the instance. If a player joins the fight, the current streak will be reset to 0. If a player leaves the fight, the task will be failed and a new instance will need to be created.",5,2,17.7],[594,59,"Elemental Company","Kill the Royal Titans without attacking any elementals.",3,0,36.7],[595,59,"I need room","Kill the Royal Titans while extinguishing all fires and melting all icicles before they dissipate naturally.",3,2,37.4],[596,59,"No time to pray","Kill the Royal Titans without losing any prayer points.",3,3,17.7],[597,59,"Let them fight","Kill the Royal Titans while having the Royal Titans kill a total of 10 elementals.",3,0,36.0],[598,59,"It takes too long","Kill both Royal Titans while they are charging up their area attack. Both titans must die during the same charging phase.",1,1,38.2],[599,88,"Yama Adept","Defeat Yama once.",0,3,22.2],[600,88,"Yama Veteran","Defeat Yama 50 times.",0,4,17.3],[601,88,"Yama Speed-Trialist","Defeat Yama in an average time of under 3:38 over your last four kills.",4,3,15.6],[602,88,"Yama Speed-Chaser","Defeat Yama in an average time of under 3:00 over your last four kills.",4,4,5.7],[603,88,"Yama Speed-Runner","Defeat Yama in an average time of under 2:34 over your last four kills.",4,5,1.7],[604,88,"No toppings, no drinks, thanks","Defeat Yama without anybody healing using anything other than plain pizza and without anybody drinking any potions.",3,4,7.7],[605,88,"Shadow dancer","Defeat Yama without getting hit by shadows and without being more than one tile away from the center of his shadow crash attack.",1,4,16.1],[606,88,"Fire fighter","Defeat Yama without getting hit by fire and having only killed void flares with special attacks.",1,4,18.1],[607,88,"Back so soon?","Defeat Yama without the judge being attacked with the wrong style and without taking more than one instance of damage each time you are exiled from the arena.",1,3,20.6],[608,88,"Contract Choreographer","Defeat Yama whilst completing 'Shadow Dancer', 'Fire Fighter', 'Back so soon?' and without taking any other avoidable damage.",2,5,13.8],[609,88,"Contractually Unbound","Defeat Yama under the elevated conditions of one of his non-standard contracts.",0,5,3.3],[610,28,"Doom Adept","Defeat the Doom of Mokhaiotl at delve level 3.",0,3,23.4],[611,28,"Doom Veteran","Defeat the Doom of Mokhaiotl at delve level 8.",0,4,10.5],[612,28,"It's Dark Down Here","Defeat the Doom of Mokhaiotl at delve level 16.",5,5,3.3],[613,28,"Exposed Doom","Defeat the Doom of Mokhaiotl during its Melee charge phase.",1,3,21.9],[614,28,"Mokhaiotl Drift","Defeat the Doom of Mokhaiotl at level 8 or above before he finishes the first burrow phase.",1,4,6.2],[615,28,"Grub Patrol","Defeat the Doom of Mokhaiotl levels 1-8 without ever letting a grub be absorbed.",1,4,6.8],[616,28,"Perfect Doom","Defeat the Doom of Mokhaiotl levels 1-8 without taking any damage from the boss, letting any grubs be absorbed, or stepping in acid blood.",2,5,2.4],[617,28,"The Praying Mantis","Defeat the Doom of Mokhaiotl levels 1-8 without restoring your prayer points through any method.",3,5,2.4],[618,28,"Duel of Mokhaiotl","Defeat the Doom of Mokhaiotl levels 1-8 whilst only damaging the boss with one-handed melee attacks.",3,5,1.5],[619,28,"Darkness Is Your Ally?","Defeat the Doom of Mokhaiotl levels 1-8 without equipping a demonbane weapon.",3,5,2.4],[620,28,"Mine's Better","Defeat the Doom of Mokhaiotl levels 1-8 whilst always wearing a shield.",3,4,2.0],[621,28,"Doom Crawler","Defeat the Doom of Mokhaiotl level 1 in less than 30 seconds.",4,3,5.4],[622,28,"Doom Chaser","Defeat the Doom of Mokhaiotl levels 1-8 in less than 10:00.",4,4,5.1],[623,28,"Doom Racer","Defeat the Doom of Mokhaiotl levels 1-8 in less than 7:15.",4,5,1.3],[624,28,"Mopping up","Clear at least 8 acid splats in a single Volatile Earth special attack.",1,5,6.0],[625,63,"Shellbane Adept","Kill the Shellbane Gryphon 25 times.",0,0,20.9],[626,63,"Shellbane Veteran","Kill the Shellbane Gryphon 50 times.",0,1,19.7],[627,63,"Perfect Shellbane","Kill the Shellbane Gryphon without taking damage.",2,1,20.0],[628,63,"Shellbane Speedrunner","Kill the Shellbane Gryphon 10 times within 12:30 minutes of entering the cave.",4,1,15.8],[629,63,"Shellbane Survivor","Kill the Shellbane Gryphon 25 times without leaving the cave.",5,2,14.4],[630,63,"Dry Cleaning","Kill the Shellbane Gryphon after clearing its corrosive spit from your armour.",1,0,14.5],[631,63,"Featherweight Fighter","Kill the Shellbane Gryphon 5 times without leaving the cave, while wearing gear weighing less than 40kg.",3,2,14.4],[632,10,"Brutus Novice","Kill Brutus.",0,0,54.0],[633,10,"Brutus Champion","Kill Brutus 10 times.",0,1,51.1],[634,10,"Brutus Speed-Trialist","Kill Brutus in less than 2 seconds.",4,3,28.1],[635,10,"Beef vs Beef","Kill Brutus whilst neither equipping nor consuming anything.",2,1,36.6],[636,10,"Smarter than a Cow","Kill Brutus without being attacked.",1,2,39.7],[637,52,"Maggot Squasher","Kill the Maggot King.",0,2,10.2],[638,52,"Maggot Exterminator","Kill the Maggot King 25 times.",0,3,7.9],[639,52,"Camping the King","Kill the Maggot King 12 times without leaving the arena.",5,4,2.5],[640,52,"Maggot King Speed Chaser","Complete the first 5 kills of the Maggot King within 9 minutes after entering the arena.",4,5,1.1],[641,52,"Trying to fit in","Kill the Maggot King using only weapons that can be found in Vampyrium.",3,3,2.6],[642,52,"King-sized clobbering","Kill the Maggot King without missing a single melee punish.",1,4,5.7],[643,52,"Digging in","Kill the Maggot King without moving more than 40 tiles.",3,4,3.1],[644,52,"Cordoned Off","Kill the Maggot King without moving beyond the back row of tiles.",3,4,3.0],[645,52,"Perfect Maggot King","Kill the Maggot King without taking any avoidable damage or him ever being healed.",2,4,2.2],[646,51,"Mad Angel Adept","Kill the Mad Angel 25 times.",0,1,5.1],[647,51,"Mad Angel Veteran","Kill the Mad Angel 50 times.",0,2,4.2],[648,51,"Perfect Mad Angel","Kill the Mad Angel without taking any avoidable damage.",2,2,3.0],[649,51,"This Is Madness","Kill the Mad Angel 15 times without leaving her arena.",5,3,2.2],[650,51,"Mad Angel Speed-Runner","Kill the Mad Angel 5 times within 10 minutes of entering her arena.",4,2,2.8],[651,51,"Dancing Queen","Kill the Mad Angel after getting 6 consecutive enhanced attacks by dodging the sweep attack successfully during her enrage phase.",1,1,2.5],[652,51,"Smite Fight","Kill the Mad Angel after getting 3 consecutive enhanced attacks by successfully praying against the smite attacks during her enrage phase.",1,1,2.9],[653,51,"Juggling Act","Kill the Mad Angel after attacking her between each bounce of the blast attack during her enrage phase.",1,1,3.2],[654,51,"The Pen Is Mightier","Kill the Mad Angel without equipping any weapon.",3,3,2.7]]};</script>
+<script>
+(function () {
+  "use strict";
+  var D = window.CA_DATA;
+  var TIERS = D.tiers, TYPES = D.types, MONSTERS = D.monsters;
+  // tasks: [id, monsterIdx, name, desc, typeIdx, tierIdx, comp]
+  var TASKS = D.tasks.map(function (r) {
+    return { id: r[0], monster: MONSTERS[r[1]], name: r[2], desc: r[3], type: TYPES[r[4]], tierIdx: r[5], tier: TIERS[r[5]], comp: r[6] };
+  });
+  var BY_ID = {};
+  TASKS.forEach(function (t) { BY_ID[t.id] = t; });
+  var TIER_POINTS = [1, 2, 3, 4, 5, 6];
+  var TIER_KEY = ["easy", "medium", "hard", "elite", "master", "grandmaster"];
+
+  /* ---- boss access requirements (conservative: only well-known hard gates) ---- */
+  var Q_DT2 = "Desert Treasure II - The Fallen Empire";
+  var Q_SOTE = "Song of the Elves";
+  var REQS = {
+    "Vorkath": { quests: ["Dragon Slayer II"] },
+    "Galvek": { quests: ["Dragon Slayer II"] },
+    "Glough": { quests: ["Monkey Madness II"] },
+    "Demonic Gorilla": { quests: ["Monkey Madness II"] },
+    "Zulrah": { quests: ["Regicide"] },
+    "Crystalline Hunllef": { quests: [Q_SOTE] },
+    "Corrupted Hunllef": { quests: [Q_SOTE] },
+    "Zalcano": { quests: [Q_SOTE] },
+    "Fragment of Seren": { quests: [Q_SOTE] },
+    "Duke Sucellus": { quests: [Q_DT2] },
+    "Leviathan": { quests: [Q_DT2] },
+    "Whisperer": { quests: [Q_DT2] },
+    "Vardorvis": { quests: [Q_DT2] },
+    "Phantom Muspah": { quests: ["Secrets of the North"] },
+    "Tombs of Amascut": { quests: ["Beneath Cursed Sands"] },
+    "Tombs of Amascut: Entry Mode": { quests: ["Beneath Cursed Sands"] },
+    "Tombs of Amascut: Expert Mode": { quests: ["Beneath Cursed Sands"] },
+    "Moons of Peril": { quests: ["Perilous Moons"] },
+    "Fortis Colosseum": { quests: ["Children of the Sun"] },
+    "The Hueycoatl": { quests: ["Children of the Sun"] },
+    "Amoxliatl": { quests: ["Children of the Sun"] },
+    "Doom of Mokhaiotl": { quests: ["Children of the Sun"], note: "very high-level encounter" },
+    "Dagannoth Prime": { quests: ["Horror from the Deep"] },
+    "Dagannoth Rex": { quests: ["Horror from the Deep"] },
+    "Dagannoth Supreme": { quests: ["Horror from the Deep"] },
+    "Barrows": { quests: ["Priest in Peril"] },
+    "Abyssal Sire": { skills: { Slayer: 85 } },
+    "Alchemical Hydra": { skills: { Slayer: 95 } },
+    "Cerberus": { skills: { Slayer: 91 } },
+    "Grotesque Guardians": { skills: { Slayer: 75 } },
+    "Kraken": { skills: { Slayer: 87 } },
+    "Thermonuclear Smoke Devil": { skills: { Slayer: 93 } },
+    "Basilisk Knight": { skills: { Slayer: 60 }, quests: ["The Fremennik Isles"] },
+    "Gargoyle": { skills: { Slayer: 75 } },
+    "Kurask": { skills: { Slayer: 70 } },
+    "Skeletal Wyvern": { skills: { Slayer: 72 } },
+    "Wyrm": { skills: { Slayer: 62 } },
+    "Bloodveld": { skills: { Slayer: 50 } },
+    "Aberrant Spectre": { skills: { Slayer: 60 } },
+    "Hespori": { skills: { Farming: 65 }, note: "Farming Guild - needs 60% Hosidius favour" },
+    "Wintertodt": { skills: { Firemaking: 50 } },
+    "Tempoross": { skills: { Fishing: 35 } },
+    "TzKal-Zuk": { note: "the Inferno - requires completing the Fight Caves" },
+    "Phosani's Nightmare": { note: "requires a solo Nightmare kill first" }
+  };
+
+  /* ---------------- state ---------------- */
+  var LS_KEY = "ca-roulette-v1";
+  var store = load();
+  var session = { skipped: {} };
+  var current = null;
+
+  function load() {
+    try {
+      var s = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+      if (!s || typeof s !== "object") s = {};
+      s.profiles = s.profiles || {};
+      s.settings = s.settings || {};
+      return s;
+    } catch (e) { return { profiles: {}, settings: {} }; }
+  }
+  function save() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {}
+  }
+  function activeProfile() {
+    return store.activeProfile ? store.profiles[store.activeProfile] : null;
+  }
+
+  /* ---------------- import ---------------- */
+  var elErr = document.getElementById("err");
+  function fail(msg) { elErr.textContent = msg; }
+
+  function ingest(json) {
+    if (!json || typeof json !== "object") throw new Error("That file isn't valid JSON.");
+    var ca = json.combatAchievements;
+    if (!ca || !Array.isArray(ca.tasks)) throw new Error("This doesn't look like a CA Roulette export (no combatAchievements.tasks).");
+    var completed = Array.isArray(ca.completedIds) ? ca.completedIds.slice()
+      : ca.tasks.filter(function (t) { return t.completed; }).map(function (t) { return t.id; });
+
+    var items = json.items || {};
+    var ownedIds = {};
+    ["equipment", "inventory", "bank"].forEach(function (k) {
+      (items[k] || []).forEach(function (it) { if (it && it.id) ownedIds[it.id] = true; });
+    });
+
+    var uname = (json.username || json.displayName || "player").toString();
+    // carry over locally-ticked tasks, but drop any the fresh export now shows as done
+    var completedLookup = {};
+    completed.forEach(function (id) { completedLookup[id] = true; });
+    var carriedMarks = ((store.profiles[uname] && store.profiles[uname].markedDone) || [])
+      .filter(function (id) { return !completedLookup[id]; });
+    var prof = {
+      username: uname,
+      displayName: json.displayName || uname,
+      combatLevel: json.combatLevel || null,
+      accountType: json.accountType || "NORMAL",
+      pointsEarned: ca.pointsEarned || 0,
+      pointsTotal: ca.pointsTotal || 2697,
+      tasksTotal: ca.tasksTotal || TASKS.length,
+      completedIds: completed,
+      byTier: ca.tasksCompletedByTier || null,
+      skills: json.skills || {},
+      questsFinished: json.questsFinished || [],
+      ownedItemIds: Object.keys(ownedIds).map(Number),
+      hasItems: !!(items.bankIncluded || (items.equipment && items.equipment.length) || (items.inventory && items.inventory.length)),
+      importedAt: new Date().toISOString(),
+      markedDone: carriedMarks
+    };
+    store.profiles[uname] = prof;
+    store.activeProfile = uname;
+    save();
+    elErr.textContent = "";
+    current = null;
+    lastMarked = null;
+    if (undoRow) undoRow.hidden = true;
+    if (resetConfirm) resetConfirm.hidden = true;
+    session.skipped = {};
+    render();
+  }
+
+  function readFile(f) {
+    if (!f) return;
+    if (f.size > 8 * 1024 * 1024) { fail("That file is unexpectedly large (>8 MB) - aborting."); return; }
+    var fr = new FileReader();
+    fr.onerror = function () { fail("Couldn't read that file."); };
+    fr.onload = function () {
+      try { ingest(JSON.parse(fr.result)); }
+      catch (e) { fail(e.message || "Import failed."); }
+    };
+    fr.readAsText(f);
+  }
+
+  var drop = document.getElementById("drop");
+  var fileInput = document.getElementById("file");
+  document.getElementById("pickBtn").addEventListener("click", function () { fileInput.click(); });
+  fileInput.addEventListener("change", function () { readFile(fileInput.files[0]); });
+  ["dragenter", "dragover"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("hot"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("hot"); });
+  });
+  drop.addEventListener("drop", function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    readFile(f);
+  });
+  document.getElementById("reimportBtn").addEventListener("click", function () {
+    document.getElementById("import").scrollIntoView({ behavior: "smooth", block: "center" });
+    fileInput.click();
+  });
+  document.getElementById("switchBtn").addEventListener("click", function () {
+    var names = Object.keys(store.profiles);
+    if (names.length < 2) return;
+    var i = names.indexOf(store.activeProfile);
+    store.activeProfile = names[(i + 1) % names.length];
+    save();
+    current = null;
+    lastMarked = null;
+    undoRow.hidden = true;
+    resetConfirm.hidden = true;
+    session.skipped = {};
+    render();
+  });
+
+  /* ---------------- filters ---------------- */
+  var settings = store.settings;
+  settings.tiers = settings.tiers || TIERS.slice();
+  settings.types = settings.types || TYPES.slice();
+  settings.monster = settings.monster || "";
+  settings.hideBlocked = !!settings.hideBlocked;
+
+  var tierChips = document.getElementById("tierChips");
+  TIERS.forEach(function (name, i) {
+    var b = document.createElement("button");
+    b.className = "chip t-" + TIER_KEY[i];
+    b.type = "button";
+    b.setAttribute("aria-pressed", settings.tiers.indexOf(name) >= 0 ? "true" : "false");
+    b.innerHTML = '<span class="dot"></span>' + name;
+    b.addEventListener("click", function () {
+      toggleIn(settings.tiers, name, b);
+      save(); refresh();
+    });
+    tierChips.appendChild(b);
+  });
+  var typeChips = document.getElementById("typeChips");
+  TYPES.forEach(function (name) {
+    var b = document.createElement("button");
+    b.className = "chip";
+    b.type = "button";
+    b.setAttribute("aria-pressed", settings.types.indexOf(name) >= 0 ? "true" : "false");
+    b.textContent = name;
+    b.addEventListener("click", function () {
+      toggleIn(settings.types, name, b);
+      save(); refresh();
+    });
+    typeChips.appendChild(b);
+  });
+  function toggleIn(arr, v, btn) {
+    var i = arr.indexOf(v);
+    if (i >= 0) arr.splice(i, 1); else arr.push(v);
+    btn.setAttribute("aria-pressed", i >= 0 ? "false" : "true");
+  }
+
+  var mFilter = document.getElementById("monsterFilter");
+  mFilter.value = settings.monster;
+  mFilter.addEventListener("input", function () {
+    settings.monster = mFilter.value.trim();
+    save(); refresh();
+  });
+  document.getElementById("monsterClear").addEventListener("click", function () {
+    mFilter.value = ""; settings.monster = ""; save(); refresh();
+  });
+
+  var hideBlocked = document.getElementById("hideBlocked");
+  hideBlocked.checked = settings.hideBlocked;
+  hideBlocked.addEventListener("change", function () {
+    settings.hideBlocked = hideBlocked.checked; save(); refresh();
+  });
+
+  /* ---------------- eligibility ---------------- */
+  function completedSet() {
+    var p = activeProfile();
+    var s = {};
+    if (!p) return s;
+    (p.completedIds || []).forEach(function (id) { s[id] = true; });
+    (p.markedDone || []).forEach(function (id) { s[id] = true; });
+    return s;
+  }
+  function blockReasons(task) {
+    var p = activeProfile();
+    if (!p) return [];
+    var r = REQS[task.monster];
+    if (!r) return [];
+    var out = [];
+    if (r.quests) {
+      var qf = {};
+      (p.questsFinished || []).forEach(function (q) { qf[q] = true; });
+      r.quests.forEach(function (q) { if (!qf[q]) out.push("Requires " + q); });
+    }
+    if (r.skills) {
+      Object.keys(r.skills).forEach(function (sk) {
+        var lvl = (p.skills && p.skills[sk]) || 0;
+        if (lvl < r.skills[sk]) out.push("Requires " + sk + " " + r.skills[sk] + " (you: " + lvl + ")");
+      });
+    }
+    return out;
+  }
+  function softNote(task) {
+    var r = REQS[task.monster];
+    return r && r.note ? r.note : null;
+  }
+
+  function pool() {
+    var done = completedSet();
+    var mq = settings.monster.toLowerCase();
+    return TASKS.filter(function (t) {
+      if (done[t.id]) return false;
+      if (session.skipped[t.id]) return false;
+      if (settings.tiers.indexOf(t.tier) < 0) return false;
+      if (settings.types.indexOf(t.type) < 0) return false;
+      if (mq && t.monster.toLowerCase().indexOf(mq) < 0) return false;
+      if (settings.hideBlocked && blockReasons(t).length) return false;
+      return true;
+    });
+  }
+
+  /* ---------------- render ---------------- */
+  var elProfile = document.getElementById("profile");
+  var elImport = document.getElementById("import");
+  var elStage = document.getElementById("stage");
+  var elCard = document.getElementById("card");
+  var elCardBody = document.getElementById("cardBody");
+  var spinBtn = document.getElementById("spinBtn");
+  var doneBtn = document.getElementById("doneBtn");
+  var skipBtn = document.getElementById("skipBtn");
+  var undoBtn = document.getElementById("undoBtn");
+  var undoRow = document.getElementById("undoRow");
+  var resetMarksBtn = document.getElementById("resetMarksBtn");
+  var resetConfirm = document.getElementById("resetConfirm");
+  var resetConfirmText = document.getElementById("resetConfirmText");
+  var poolCount = document.getElementById("poolCount");
+  var poolBreak = document.getElementById("poolBreak");
+  var blockNote = document.getElementById("blockNote");
+  var lastMarked = null; // { id, name } of the most recent "I did it" click
+
+  function tierColor(i) {
+    return getComputedStyle(document.documentElement).getPropertyValue("--tier-" + TIER_KEY[i]).trim();
+  }
+
+  function render() {
+    var p = activeProfile();
+    if (p) {
+      elImport.style.display = "none";
+      elProfile.classList.add("on");
+      elStage.classList.remove("locked");
+      document.getElementById("pName").textContent = p.displayName + (p.accountType && p.accountType !== "NORMAL" ? "  \u00b7  " + p.accountType.replace(/_/g, " ").toLowerCase() : "");
+      var done = completedSet();
+      var doneCount = Object.keys(done).length;
+      var stats = [];
+      if (p.combatLevel) stats.push("<span>combat <b>" + p.combatLevel + "</b></span>");
+      stats.push("<span>CA points <b>" + p.pointsEarned + "</b> / " + p.pointsTotal + "</span>");
+      stats.push("<span>done <b>" + doneCount + "</b> / " + TASKS.length + "</span>");
+      stats.push("<span>left <b>" + (TASKS.length - doneCount) + "</b></span>");
+      document.getElementById("pStats").innerHTML = stats.join("");
+      renderTierBars(done);
+      document.getElementById("switchBtn").hidden = Object.keys(store.profiles).length < 2;
+      var nMarks = (p.markedDone || []).length;
+      resetMarksBtn.hidden = nMarks === 0;
+      resetMarksBtn.textContent = "Undo " + nMarks + " local mark" + (nMarks === 1 ? "" : "s");
+      if (nMarks === 0) resetConfirm.hidden = true;
+
+      var hasReq = (p.questsFinished && p.questsFinished.length) || (p.skills && Object.keys(p.skills).length);
+      document.getElementById("blockRow").style.display = hasReq ? "" : "none";
+      blockNote.textContent = p.hasItems ? "" : "based on your quests & stats";
+
+      if (!current && elCard.classList.contains("empty")) {
+        elCard.innerHTML = '<div class="taskname" id="cardBody">Press Spin for your next task.</div>';
+      }
+    } else {
+      elImport.style.display = "";
+      elProfile.classList.remove("on");
+      elStage.classList.add("locked");
+    }
+    refresh();
+  }
+
+  function renderTierBars(done) {
+    var wrap = document.getElementById("tierbars");
+    wrap.innerHTML = "";
+    var totals = [0, 0, 0, 0, 0, 0], dn = [0, 0, 0, 0, 0, 0];
+    TASKS.forEach(function (t) {
+      totals[t.tierIdx]++;
+      if (done[t.id]) dn[t.tierIdx]++;
+    });
+    var abbr = ["Easy", "Med", "Hard", "Elite", "Master", "GM"];
+    TIERS.forEach(function (name, i) {
+      var pct = totals[i] ? Math.round((dn[i] / totals[i]) * 100) : 0;
+      var d = document.createElement("div");
+      d.className = "tb";
+      d.title = name + ": " + dn[i] + " of " + totals[i] + " done";
+      d.innerHTML = '<div class="label"><span>' + abbr[i] + '</span><span>' + dn[i] + '/' + totals[i] + '</span></div>' +
+        '<div class="track"><div class="fill" style="width:' + pct + '%;background:' + tierColor(i) + '"></div></div>';
+      wrap.appendChild(d);
+    });
+  }
+
+  function refresh() {
+    var list = pool();
+    poolCount.textContent = list.length;
+    var byTier = [0, 0, 0, 0, 0, 0];
+    list.forEach(function (t) { byTier[t.tierIdx]++; });
+    poolBreak.textContent = list.length
+      ? byTier.map(function (n, i) { return n ? n + " " + TIERS[i].toLowerCase() : null; }).filter(Boolean).join("  \u00b7  ")
+      : "";
+    var p = activeProfile();
+    spinBtn.disabled = !p || list.length === 0;
+    if (p && list.length === 0 && !spinTimer) {
+      showEmpty(anyFilterActive()
+        ? "No tasks match these filters. Loosen them, or you've done everything that does."
+        : "Every task is done. Absolute menace. \uD83C\uDFC6");
+    } else if (p && list.length > 0 && !current && !spinTimer && elCard.classList.contains("empty")) {
+      elCard.innerHTML = '<div class="taskname" id="cardBody">Press Spin for your next task.</div>';
+    }
+  }
+  function anyFilterActive() {
+    return settings.tiers.length < TIERS.length || settings.types.length < TYPES.length ||
+      settings.monster !== "" || settings.hideBlocked;
+  }
+
+  function showEmpty(msg) {
+    current = null;
+    elCard.className = "card empty";
+    elCard.style.removeProperty("--card-tier");
+    elCardBody.textContent = msg;
+    elCard.innerHTML = '<div class="taskname" id="cardBody">' + esc(msg) + "</div>";
+    doneBtn.hidden = true; skipBtn.hidden = true;
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function wikiURL(name) {
+    return "https://oldschool.runescape.wiki/w/" + encodeURIComponent(name.replace(/ /g, "_"));
+  }
+
+  function paint(task) {
+    var reasons = blockReasons(task);
+    var note = softNote(task);
+    var extra = "";
+    if (reasons.length) extra += '<div class="blocked">&#9888; ' + reasons.map(esc).join("<br>&#9888; ") + "</div>";
+    else if (note) extra += '<div class="blocked" style="color:var(--muted)">&#9432; ' + esc(note) + "</div>";
+    elCard.className = "card";
+    elCard.style.setProperty("--card-tier", tierColor(task.tierIdx));
+    elCard.innerHTML =
+      '<div class="medallion" aria-hidden="true">' + TIER_POINTS[task.tierIdx] + '<small>PTS</small></div>' +
+      '<div class="tierlabel">' + esc(task.tier) + "</div>" +
+      '<div class="monster">' + esc(task.monster) + "</div>" +
+      '<div class="taskname">' + esc(task.name) + "</div>" +
+      '<div class="desc">' + esc(task.desc) + "</div>" +
+      '<div class="meta">' +
+        "<span>" + esc(task.type) + "</span>" +
+        (task.comp != null ? "<span>" + task.comp + "% of players have this</span>" : "") +
+        '<a href="' + wikiURL(task.name) + '" target="_blank" rel="noopener">wiki &#8599;</a>' +
+      "</div>" + extra;
+    doneBtn.hidden = false;
+    skipBtn.hidden = false;
+  }
+
+  var spinTimer = null;
+  function settle(pick) {
+    if (spinTimer) { clearInterval(spinTimer); spinTimer = null; }
+    current = pick;
+    paint(pick);
+    spinBtn.disabled = false;
+    refresh();
+  }
+  function spin() {
+    var list = pool();
+    if (!list.length) { refresh(); return; }
+    if (spinTimer) { clearInterval(spinTimer); spinTimer = null; }
+    var pick = list[(Math.random() * list.length) | 0];
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { settle(pick); return; }
+    spinBtn.disabled = true;
+    doneBtn.hidden = true; skipBtn.hidden = true;
+    elCard.className = "card spinning";
+    elCard.style.setProperty("--card-tier", tierColor(pick.tierIdx));
+    var i = 0, start = (window.performance && performance.now()) || Date.now();
+    spinTimer = setInterval(function () {
+      var r = list[(Math.random() * list.length) | 0];
+      elCard.innerHTML =
+        '<div class="medallion" aria-hidden="true">&#9670;</div>' +
+        '<div class="tierlabel">' + esc(r.tier) + "</div>" +
+        '<div class="monster">' + esc(r.monster) + "</div>" +
+        '<div class="taskname">' + esc(r.name) + "</div>" +
+        '<div class="desc">&nbsp;</div>';
+      var now = (window.performance && performance.now()) || Date.now();
+      if (++i >= 12 || now - start > 620) { settle(pick); }
+    }, 52);
+  }
+
+  spinBtn.addEventListener("click", spin);
+  spinBtn.addEventListener("keyup", function (e) { if (e.key === "Enter") e.preventDefault(); });
+  doneBtn.addEventListener("click", function () {
+    if (!current) return;
+    var p = activeProfile();
+    if (!p) return;
+    if (p.markedDone.indexOf(current.id) < 0) p.markedDone.push(current.id);
+    lastMarked = { id: current.id, name: current.name };
+    undoBtn.textContent = 'Undo "did it": ' + current.name;
+    undoRow.hidden = false;
+    save();
+    render();
+    spin();
+  });
+  undoBtn.addEventListener("click", function () {
+    var p = activeProfile();
+    if (!p || !lastMarked) { undoRow.hidden = true; return; }
+    var idx = p.markedDone.indexOf(lastMarked.id);
+    if (idx >= 0) p.markedDone.splice(idx, 1);
+    delete session.skipped[lastMarked.id];
+    lastMarked = null;
+    undoRow.hidden = true;
+    save();
+    render();
+  });
+  resetMarksBtn.addEventListener("click", function () {
+    var p = activeProfile();
+    if (!p || !p.markedDone.length) return;
+    var n = p.markedDone.length;
+    resetConfirmText.textContent = "Un-tick all " + n + " task" + (n === 1 ? "" : "s") +
+      " you marked done on this site? (Your imported progress is not affected.)";
+    resetConfirm.hidden = false;
+  });
+  document.getElementById("resetNo").addEventListener("click", function () {
+    resetConfirm.hidden = true;
+  });
+  document.getElementById("resetYes").addEventListener("click", function () {
+    var p = activeProfile();
+    resetConfirm.hidden = true;
+    if (!p) return;
+    p.markedDone = [];
+    lastMarked = null;
+    undoRow.hidden = true;
+    save();
+    render();
+  });
+  skipBtn.addEventListener("click", function () {
+    if (!current) return;
+    session.skipped[current.id] = true;
+    spin();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.key === " " || e.key === "Spacebar") {
+      if (!spinBtn.disabled) { e.preventDefault(); spin(); }
+    }
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
