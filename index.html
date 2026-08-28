@@ -595,16 +595,32 @@
     if (!json || typeof json !== "object") throw new Error("That file isn't valid JSON.");
     var ca = json.combatAchievements;
     if (!ca || !Array.isArray(ca.tasks)) throw new Error("This doesn't look like a CA Roulette export (no combatAchievements.tasks).");
-    var completed = Array.isArray(ca.completedIds) ? ca.completedIds.slice()
-      : ca.tasks.filter(function (t) { return t.completed; }).map(function (t) { return t.id; });
+    var completed = (Array.isArray(ca.completedIds) ? ca.completedIds
+      : ca.tasks.filter(function (t) { return t && t.completed; }).map(function (t) { return t.id; })
+    ).map(Number).filter(function (n) { return Number.isFinite(n); });
 
-    var items = json.items || {};
+    var skills = {};
+    if (json.skills && typeof json.skills === "object") {
+      Object.keys(json.skills).forEach(function (k) {
+        var v = Number(json.skills[k]);
+        if (Number.isFinite(v)) skills[k] = v;
+      });
+    }
+    var questsFinished = Array.isArray(json.questsFinished)
+      ? json.questsFinished.filter(function (q) { return typeof q === "string"; })
+      : [];
+
+    var items = (json.items && typeof json.items === "object") ? json.items : {};
     var ownedIds = {};
     ["equipment", "inventory", "bank"].forEach(function (k) {
-      (items[k] || []).forEach(function (it) { if (it && it.id) ownedIds[it.id] = true; });
+      if (Array.isArray(items[k])) items[k].forEach(function (it) {
+        var id = it && Number(it.id);
+        if (Number.isFinite(id) && id > 0) ownedIds[id] = true;
+      });
     });
 
-    var uname = (json.username || json.displayName || "player").toString();
+    var uname = (typeof json.username === "string" && json.username)
+      || (typeof json.displayName === "string" && json.displayName) || "player";
     // carry over locally-ticked tasks, but drop any the fresh export now shows as done
     var completedLookup = {};
     completed.forEach(function (id) { completedLookup[id] = true; });
@@ -612,16 +628,16 @@
       .filter(function (id) { return !completedLookup[id]; });
     var prof = {
       username: uname,
-      displayName: json.displayName || uname,
-      combatLevel: json.combatLevel || null,
-      accountType: json.accountType || "NORMAL",
-      pointsEarned: ca.pointsEarned || 0,
-      pointsTotal: ca.pointsTotal || 2697,
-      tasksTotal: ca.tasksTotal || TASKS.length,
+      displayName: typeof json.displayName === "string" ? json.displayName : uname,
+      combatLevel: Number(json.combatLevel) || null,
+      accountType: typeof json.accountType === "string" ? json.accountType : "NORMAL",
+      pointsEarned: Number(ca.pointsEarned) || 0,
+      pointsTotal: Number(ca.pointsTotal) || 2697,
+      tasksTotal: Number(ca.tasksTotal) || TASKS.length,
       completedIds: completed,
-      byTier: ca.tasksCompletedByTier || null,
-      skills: json.skills || {},
-      questsFinished: json.questsFinished || [],
+      byTier: (ca.tasksCompletedByTier && typeof ca.tasksCompletedByTier === "object") ? ca.tasksCompletedByTier : null,
+      skills: skills,
+      questsFinished: questsFinished,
       ownedItemIds: Object.keys(ownedIds).map(Number),
       hasItems: !!(items.bankIncluded || (items.equipment && items.equipment.length) || (items.inventory && items.inventory.length)),
       importedAt: new Date().toISOString(),
@@ -1015,7 +1031,7 @@
   });
 
   document.addEventListener("keydown", function (e) {
-    if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.target && /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(e.target.tagName)) return;
     if (e.key === " " || e.key === "Spacebar") {
       if (!spinBtn.disabled) { e.preventDefault(); spin(); }
     }
