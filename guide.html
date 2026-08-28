@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup Guide - Roll My CA</title>
+<meta name="description" content="How to set up Roll My CA: install the RuneLite plugin, export your Combat Achievement progress and start rolling random tasks.">
+<link rel="canonical" href="https://rollmyca.com/guide">
+<meta name="theme-color" content="#130d06">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://rollmyca.com/guide">
+<meta property="og:site_name" content="Roll My CA">
+<meta property="og:title" content="Roll My CA - Setup Guide">
+<meta property="og:description" content="Install the plugin, export your progress, start rolling. Takes about two minutes.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Ccircle%20cx='16'%20cy='16'%20r='15'%20fill='%23e8b23e'%20stroke='%23241802'%20stroke-width='2'/%3E%3Cg%20fill='%23241802'%3E%3Crect%20x='10'%20y='8.5'%20width='4'%20height='15'/%3E%3Crect%20x='11.5'%20y='8.5'%20width='9.5'%20height='9'%20rx='4.5'/%3E%3Cpolygon%20points='14%2C17%2018%2C17%2021.8%2C23.5%2017.2%2C23.5'/%3E%3C/g%3E%3Ccircle%20cx='16.1'%20cy='13'%20r='2.9'%20fill='%23e8b23e'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Ccircle%20cx='16'%20cy='16'%20r='15'%20fill='%23e8b23e'%20stroke='%23241802'%20stroke-width='2'/%3E%3Cg%20fill='%23241802'%3E%3Crect%20x='10'%20y='8.5'%20width='4'%20height='15'/%3E%3Crect%20x='11.5'%20y='8.5'%20width='9.5'%20height='9'%20rx='4.5'/%3E%3Cpolygon%20points='14%2C17%2018%2C17%2021.8%2C23.5%2017.2%2C23.5'/%3E%3C/g%3E%3Ccircle%20cx='16.1'%20cy='13'%20r='2.9'%20fill='%23e8b23e'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#130d06; --panel:#211a0d; --well:#191207;
+    --ink:#ece0c4; --ink-soft:#c7b48b; --muted:#8f7c56;
+    --line:#3a2f1a; --edge:#000; --bevel:rgba(255,226,164,.12);
+    --gold:#e8b23e; --gold-lite:#ffe6a6; --gold-deep:#9a6a1e;
+    --font-display:"Cinzel","Times New Roman",serif;
+    --font-body:"Spectral",Georgia,serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); font-size:17.5px; line-height:1.68;}
+  .wrap{max-width:760px; margin:0 auto; padding:26px 22px 80px;}
+
+  .back{font-family:var(--font-mono); font-size:12px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none;
+    display:inline-block; margin-bottom:26px;}
+  .back:hover{color:var(--gold);}
+
+  header{text-align:center; margin-bottom:34px;}
+  h1{font-family:var(--font-display); font-weight:700;
+    font-size:clamp(28px,6vw,44px); letter-spacing:.06em;
+    margin:0; line-height:1.15; color:var(--gold); text-wrap:balance;}
+  .sub{color:var(--ink-soft); margin:14px 0 0; font-size:17px;}
+  .rule{display:flex; align-items:center; gap:12px; max-width:260px; margin:16px auto 0;}
+  .rule::before,.rule::after{content:""; height:1px; flex:1;
+    background:linear-gradient(90deg,transparent,var(--gold-deep));}
+  .rule::after{background:linear-gradient(90deg,var(--gold-deep),transparent);}
+  .rule i{width:6px; height:6px; transform:rotate(45deg); background:var(--gold);}
+
+  .intro{background:var(--panel); border:1px solid var(--edge); border-radius:3px;
+    box-shadow:inset 0 0 0 1px var(--bevel); padding:18px 20px; margin-bottom:36px;
+    color:var(--ink-soft);}
+  .intro b{color:var(--ink);}
+
+  .step{margin:0 0 42px;}
+  .step-head{display:flex; align-items:center; gap:14px; margin-bottom:12px;}
+  .num{flex:none; width:38px; height:38px; border-radius:50%;
+    display:grid; place-items:center;
+    font-family:var(--font-mono); font-weight:700; font-size:17px; color:#241802;
+    background:linear-gradient(180deg,var(--gold-lite),var(--gold) 55%,var(--gold-deep));
+    box-shadow:0 2px 6px rgba(0,0,0,.45);}
+  .step h2{font-family:var(--font-display); font-weight:600; font-size:21px;
+    margin:0; letter-spacing:.02em; color:var(--ink); text-wrap:balance;}
+  .step p{margin:0 0 12px; color:var(--ink-soft);}
+  .step p:last-child{margin-bottom:0;}
+  .step ul{margin:0 0 12px; padding-left:22px; color:var(--ink-soft);}
+  .step li{margin:6px 0;}
+  .body{padding-left:52px;}
+  @media (max-width:560px){ .body{padding-left:0;} }
+
+  code{font-family:var(--font-mono); font-size:.85em;
+    background:var(--well); color:var(--gold-lite);
+    padding:2px 6px; border-radius:3px; border:1px solid var(--line);
+    word-break:break-word;}
+
+  figure{margin:16px 0 0;}
+  figure img{display:block; max-width:100%; height:auto;
+    border:1px solid var(--edge); border-radius:3px;
+    box-shadow:0 2px 0 rgba(0,0,0,.3), 0 12px 26px rgba(0,0,0,.4);
+    background:var(--well);}
+  figcaption{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.06em;
+    color:var(--muted); margin-top:8px; text-transform:uppercase;}
+
+  .note{border-left:3px solid var(--gold-deep); background:rgba(232,178,62,.07);
+    padding:12px 15px; margin:16px 0 0; border-radius:0 3px 3px 0;
+    font-size:16px; color:var(--ink-soft);}
+  .note b{color:var(--gold-lite); font-weight:600;}
+
+  h3.section{font-family:var(--font-display); font-weight:600; font-size:22px;
+    letter-spacing:.03em; margin:54px 0 6px; color:var(--gold);
+    border-top:1px solid var(--line); padding-top:26px;}
+  dl{margin:16px 0 0;}
+  dt{font-weight:600; color:var(--ink); margin-top:20px;}
+  dd{margin:4px 0 0; color:var(--ink-soft);}
+
+  .cta{text-align:center; margin-top:48px;}
+  .cta a{display:inline-block; font-family:var(--font-mono); font-size:13px;
+    letter-spacing:.18em; text-transform:uppercase; font-weight:600;
+    text-decoration:none; color:#2c1d04; padding:14px 34px; border-radius:3px;
+    border:1px solid #3d2a06;
+    background:linear-gradient(180deg,#f3d78a,#cb992f 49%,#a9781f 51%,#e8bf68);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 0 rgba(0,0,0,.32);}
+
+  footer{margin-top:56px; padding-top:22px; border-top:1px solid var(--line);
+    text-align:center; color:var(--muted);
+    font-family:var(--font-mono); font-size:11.5px; line-height:1.9;}
+  a{color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<a class="back" href="/">&lt; Back to the roulette</a>
+
+<header>
+  <h1>Setting it up</h1>
+  <div class="rule" aria-hidden="true"><i></i></div>
+  <p class="sub">Never stare at the CA list wondering what to do again.</p>
+</header>
+
+<div class="intro">
+  You know when you fancy doing a combat achievement but end up scrolling the
+  list for ten minutes and then just go do a slayer task instead? This fixes that.
+  A plugin works out which CAs you still have left, and this site picks one at
+  random. <b>Two minutes to set up, then you never think about it again.</b>
+</div>
+
+<section class="step">
+  <div class="step-head"><div class="num">1</div><h2>Get the plugin</h2></div>
+  <div class="body">
+    <p>In RuneLite, hit the <b>wrench</b>, scroll right to the bottom of the panel,
+    click <b>Plugin Hub</b>. Search <code>ca roulette</code> and install it.</p>
+    <figure><img src="/guide-img/1.png" width="244" height="267" loading="lazy" decoding="async" alt="Plugin Hub search results showing CA Roulette Export"><figcaption>Searching the Plugin Hub</figcaption></figure>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-head"><div class="num">2</div><h2>Make sure it's on</h2></div>
+  <div class="body">
+    <p>It should switch itself on. If the toggle is grey, click it.</p>
+    <figure><img src="/guide-img/2.png" width="229" height="51" loading="lazy" decoding="async" alt="CA Roulette Export enabled in the plugin list"><figcaption>Gold toggle = good to go</figcaption></figure>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-head"><div class="num">3</div><h2>Export your progress</h2></div>
+  <div class="body">
+    <p>Two small things before you export:</p>
+    <ul>
+      <li><b>Give it about 5 seconds</b> once you're in the world.</li>
+      <li><b>Open your bank once</b>, then shut it. That's how it sees your gear.</li>
+    </ul>
+    <p>Then click the new icon in the sidebar and hit <b>Export my data</b>.</p>
+    <figure><img src="/guide-img/3.png" width="301" height="490" loading="lazy" decoding="async" alt="The plugin side panel with the Export my data button"><figcaption>The panel. Bottom line tells you it worked</figcaption></figure>
+    <p style="margin-top:18px">Can't be bothered finding the icon? Just type
+    <code>::caexport</code> in chat. Same thing.</p>
+    <figure><img src="/guide-img/4.png" width="374" height="79" loading="lazy" decoding="async" alt="Typing the caexport command in the chat box"><figcaption>Or just type it</figcaption></figure>
+    <p style="margin-top:18px">Either way you get a message telling you how many
+    tasks it found and where it stuck the file.</p>
+    <figure><img src="/guide-img/5.png" width="373" height="81" loading="lazy" decoding="async" alt="Chat message confirming the export and showing the file path"><figcaption>Job done</figcaption></figure>
+    <div class="note"><b>Nothing gets sent anywhere.</b> It reads your account and
+    saves one file on your own PC. That's the lot.</div>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-head"><div class="num">4</div><h2>Go find that file</h2></div>
+  <div class="body">
+    <p>Open File Explorer, paste this in the address bar, press Enter:</p>
+    <p><code>%USERPROFILE%\.runelite\ca-roulette</code></p>
+    <p>It's in there, named after your account.</p>
+    <figure><img src="/guide-img/6.png" width="844" height="214" loading="lazy" decoding="async" alt="File Explorer showing the exported json file"><figcaption>Named after whichever account you exported</figcaption></figure>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-head"><div class="num">5</div><h2>Drag it onto the site</h2></div>
+  <div class="body">
+    <p>Back on <a href="/">the roulette</a>, drag the file onto the dashed box. Or
+    click <b>Choose file</b> if dragging is a faff.</p>
+    <figure><img src="/guide-img/7.png" width="1104" height="551" loading="lazy" decoding="async" alt="The drop zone on the site before importing"><figcaption>Anywhere on the dashed box will do</figcaption></figure>
+    <div class="note">It remembers you <b>in your browser</b>, so you only do this
+    once per device. Nothing gets uploaded, it all stays on your machine.</div>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-head"><div class="num">6</div><h2>Spin it</h2></div>
+  <div class="body">
+    <p>Your progress shows up at the top, then hit <b>Spin</b> and it throws you a
+    random task you haven't done.</p>
+    <figure><img src="/guide-img/8.png" width="877" height="782" loading="lazy" decoding="async" alt="A rolled task showing tier, boss, name and description"><figcaption>The wiki link takes you straight to the guide for it</figcaption></figure>
+    <ul style="margin-top:18px">
+      <li><b>I did it</b> ticks it off and rolls you the next one.</li>
+      <li><b>Not now</b> skips it without ticking it off. Use this liberally when it
+      hands you a Grandmaster speedrun.</li>
+      <li>Ticked something by accident? There's an <b>undo</b> right underneath.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="step">
+  <div class="step-head"><div class="num">7</div><h2>Stop it giving you nonsense</h2></div>
+  <div class="body">
+    <p>The filters at the bottom decide what it's allowed to roll. Click any of them
+    to switch it off.</p>
+    <ul>
+      <li><b>Tiers</b> and <b>type</b> - only want Hard and Elite? No speed tasks? Sorted.</li>
+      <li><b>Boss</b> - type a name and it'll only give you that one. Handy if you're
+      already sat at a boss.</li>
+      <li><b>Hide tasks I can't start yet</b> - looks at your quests and stats and bins
+      off anything you're locked out of.</li>
+    </ul>
+    <figure><img src="/guide-img/9.png" width="873" height="355" loading="lazy" decoding="async" alt="The filter panel with some tiers and types disabled"><figcaption>Counter at the bottom shows what's left in the pool</figcaption></figure>
+  </div>
+</section>
+
+<h3 class="section">Stuff you'll probably ask</h3>
+<dl>
+  <dt>Do I have to keep doing the export bit?</dt>
+  <dd>Only when you want it to catch up on tasks you've finished since. Run the
+  export again, drag the new file over, done. It picks up where you left off.</dd>
+
+  <dt>It says my bank is empty</dt>
+  <dd>You didn't open your bank before exporting. Do that and export again.</dd>
+
+  <dt>I typed ::caexport and nothing happened</dt>
+  <dd>Make sure you're properly logged in, give it a few more seconds, try again.
+  Worth checking the plugin is actually switched on too.</dd>
+
+  <dt>Can we all use it?</dt>
+  <dd>Yeah. Everyone installs the plugin and uploads their own file. Your progress
+  is saved in your own browser so nobody's treading on anyone else's.</dd>
+
+  <dt>Am I going to get banned for this?</dt>
+  <dd>No. It's a normal plugin off the official RuneLite Plugin Hub, same as any
+  other. It reads your data and writes a file, it doesn't touch the game.</dd>
+
+  <dt>It rolled me something horrendous</dt>
+  <dd>Hit <b>Not now</b>. Or turn off Grandmaster. Nobody's watching.</dd>
+</dl>
+
+<div class="cta"><a href="/">Go and roll something</a></div>
+
+<footer>
+  Task data from the OSRS Wiki. Not affiliated with Jagex.<br>
+  Everything stays on your own machine.
+</footer>
+
+</div>
+</body>
+</html>
