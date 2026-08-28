@@ -609,9 +609,13 @@
      Silently does nothing if the script is blocked or absent. */
   function track(name, data) {
     try {
-      if (typeof window.va === "function") {
-        window.va("event", data ? { name: name, data: data } : { name: name });
-      }
+      if (typeof window.va !== "function") return;
+      // Custom events need a paid plan, so each milestone is ALSO recorded as a
+      // virtual page view under /e/... - page views are included on the free
+      // plan, so the counts stay visible either way. The richer event fires too
+      // and simply gets ignored until/unless the plan supports it.
+      window.va("event", data ? { name: name, data: data } : { name: name });
+      window.va("pageview", { path: "/e/" + name, route: "/e/" + name });
     } catch (e) { /* analytics must never break the page */ }
   }
 
