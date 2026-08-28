@@ -603,6 +603,18 @@
     return store.activeProfile ? store.profiles[store.activeProfile] : null;
   }
 
+  /* ---------------- analytics ----------------
+     Anonymous counts of what happens on the page, so it's possible to see where
+     people get stuck. Never sends account names, task data or file contents.
+     Silently does nothing if the script is blocked or absent. */
+  function track(name, data) {
+    try {
+      if (typeof window.va === "function") {
+        window.va("event", data ? { name: name, data: data } : { name: name });
+      }
+    } catch (e) { /* analytics must never break the page */ }
+  }
+
   /* ---------------- import ---------------- */
   var elErr = document.getElementById("err");
   function fail(msg) { elErr.textContent = msg; }
@@ -669,16 +681,41 @@
     closeConfirm();
     session.skipped = {};
     render();
+
+    // how far through setup people get, and whether they remembered the bank step
+    track("import_ok", {
+      hasItems: prof.hasItems,
+      tasksDone: completed.length
+    });
   }
 
   function readFile(f) {
     if (!f) return;
-    if (f.size > 8 * 1024 * 1024) { fail("That file is unexpectedly large (over 8 MB), not loading it."); return; }
+    if (f.size > 8 * 1024 * 1024) {
+      fail("That file is unexpectedly large (over 8 MB), not loading it.");
+      track("import_error", { reason: "too_big" });
+      return;
+    }
     var fr = new FileReader();
-    fr.onerror = function () { fail("Couldn't read that file."); };
+    fr.onerror = function () {
+      fail("Couldn't read that file.");
+      track("import_error", { reason: "unreadable" });
+    };
     fr.onload = function () {
-      try { ingest(JSON.parse(fr.result)); }
-      catch (e) { fail(e.message || "Import failed."); }
+      var json;
+      try {
+        json = JSON.parse(fr.result);
+      } catch (e) {
+        fail("That file isn't valid JSON. Make sure you picked the .json the plugin wrote.");
+        track("import_error", { reason: "bad_json" });
+        return;
+      }
+      try {
+        ingest(json);
+      } catch (e) {
+        fail(e.message || "Import failed.");
+        track("import_error", { reason: "not_an_export" });
+      }
     };
     fr.readAsText(f);
   }
@@ -979,6 +1016,7 @@
   }
 
   var spinTimer = null;
+  var spunThisVisit = false;
   function settle(pick) {
     if (spinTimer) { clearInterval(spinTimer); spinTimer = null; }
     current = pick;
@@ -987,6 +1025,12 @@
     refresh();
   }
   function spin() {
+    // once per visit only: the useful signal is "they got it working", and
+    // counting every spin would burn through the analytics event quota
+    if (!spunThisVisit) {
+      spunThisVisit = true;
+      track("first_spin");
+    }
     var list = pool();
     if (!list.length) { refresh(); return; }
     if (spinTimer) { clearInterval(spinTimer); spinTimer = null; }
@@ -1021,6 +1065,8 @@
     lastMarked = { id: current.id, name: current.name };
     undoBtn.textContent = 'Undo "did it": ' + current.name;
     undoRow.hidden = false;
+    // tier only, never which task or whose account
+    track("task_done", { tier: current.tier });
     save();
     render();
     spin();
