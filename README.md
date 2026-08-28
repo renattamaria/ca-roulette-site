@@ -4,7 +4,7 @@ A single self-contained `index.html`. You import the JSON written by the
 **CA Roulette Export** RuneLite plugin, and it spins a random Combat Achievement
 you haven't done yet.
 
-**Live:** <https://ca-roulette.vercel.app>
+**Live:** <https://rollmyca.com>
 
 - All 655 CA tasks are baked in (id, boss, name, description, type, tier,
   community completion %), sourced from the
